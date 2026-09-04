@@ -1,4 +1,4 @@
-import { generateText, stepCountIs, streamText, type ModelMessage } from 'ai';
+import { generateText, smoothStream, stepCountIs, streamText, type ModelMessage } from 'ai';
 import { textModel } from './llm';
 import { cvTools, getRoster, searchCvs } from './tools';
 import type { ChatMode } from './schemas';
@@ -79,10 +79,27 @@ export async function buildClassicSystemPrompt(question: string): Promise<{ syst
   };
 }
 
+/**
+ * Gemini streams in large blocks — often a whole paragraph, sometimes the whole
+ * answer, in a single delta — so the raw stream arrives as a few sudden jumps
+ * rather than as text being written. `smoothStream` re-chunks it word by word at
+ * a steady rate, which is what makes a streamed answer feel streamed.
+ *
+ * It is presentation only: no token is added, removed or reordered, and the
+ * non-streaming `answerQuestion` path used by the eval does not go through it,
+ * so the measured numbers are unaffected.
+ */
+const SMOOTHING = smoothStream({ delayInMs: 12, chunking: 'word' });
+
 export async function streamAnswer(messages: ModelMessage[], mode: ChatMode, question: string) {
   if (mode === 'classic') {
     const { system } = await buildClassicSystemPrompt(question);
-    return streamText({ model: textModel(), system, messages });
+    return streamText({
+      model: textModel(),
+      system,
+      messages,
+      experimental_transform: SMOOTHING,
+    });
   }
   return streamText({
     model: textModel(),
@@ -90,6 +107,7 @@ export async function streamAnswer(messages: ModelMessage[], mode: ChatMode, que
     messages,
     tools: cvTools,
     stopWhen: stepCountIs(MAX_STEPS),
+    experimental_transform: SMOOTHING,
   });
 }
 
