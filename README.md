@@ -79,7 +79,7 @@ flowchart TB
     T2 --> ST
     T3 --> ST
     ST -->|"tool-call · tool-result · text"| UI
-    UI --> CIT["tool chips · answer · source cards · PDF at the cited page"]
+    UI --> CIT["tool trace · answer · source chips · PDF at the cited page"]
   end
 
   SQL -.-> T2
@@ -96,7 +96,7 @@ hidden — the interface's job is to make the retrieval visible.
 
 ```
 app/                 chat UI, /api/chat, /api/candidates, /api/cv/[id], /api/photo/[id]
-components/          the 7 UI components + the shadcn-style primitives they use
+components/          sidebar, chat pane, message, tool trace, source chips, PDF dialog
 lib/
   llm.ts             provider wrapper — the only file that knows it's Gemini
   agent.ts           system prompt, tool loop, classic-mode baseline
@@ -105,6 +105,7 @@ lib/
   aliases.ts         institution + skill alias map
   schemas.ts         CVProfile — shared by generation, ingest and eval
   ingest/            extract · parse · normalize · chunk · index
+  chat-store.ts      client-side conversation history (localStorage)
 scripts/
   generate.ts        sampler → LLM → templates → Playwright → PDF
   ingest.ts          orchestrates lib/ingest/*
@@ -123,8 +124,8 @@ data/                cvs/ · photos/ · ground_truth/ · candidates.db · index.
 Classic RAG embeds the question, takes the top *k* chunks, and stuffs them into
 the prompt. On this corpus that fails structurally, in two different ways:
 
-**Recall is capped at *k*.** 18 of the 30 candidates list Python. "Who has
-experience with Python?" has an 18-element answer, and top-5 retrieval can return
+**Recall is capped at *k*.** 19 of the 30 candidates list Python. "Who has
+experience with Python?" has a 19-element answer, and top-5 retrieval can return
 at most 5 of them. Raising *k* does not fix it — the correct answer is a *set*,
 and any ranked prefix of a set is the wrong shape of answer. The failure is also
 invisible: the model produces a confident, well-formed list that is simply
