@@ -1,376 +1,436 @@
-# CV Screener
 
-Chat with a corpus of 30 synthetic CVs. Every answer is grounded in the indexed
-documents and cites the PDF and page it came from.
+CV Screener
 
-Built as a technical task for a Full-Stack AI Engineer role. Runs locally; no
-deployment, no Docker, no database server, no Python.
+An AI-powered CV screening tool that lets you chat with a collection of 30 synthetic CVs.
 
----
+The system uses RAG and different retrieval tools to answer questions about candidates. Answers include the CV and page number used as the source.
 
-## Setup
+This project was built as a technical task for a Full-Stack AI Engineer role.
 
-Requires **Node ≥ 22** (`node:sqlite` is built in from 22; verified on 24.15).
+Main features
 
-```bash
+* Search across 30 CVs
+* Ask questions in natural language
+* Semantic search with vector embeddings
+* Structured filtering for exact and aggregation questions
+* Full CV retrieval for profile summaries
+* Source citations with PDF page numbers
+* Streaming responses
+* Classic RAG vs tool-based RAG comparison
+* Built-in evaluation dataset
+
+The project runs locally with Node.js only. No Docker, Python, or database server is required.
+
+⸻
+
+Setup
+
+Requirements
+
+* Node.js 22+
+* A Google Gemini API key
+
+Install dependencies:
+
 npm install
-cp .env.example .env      # add GOOGLE_GENERATIVE_AI_API_KEY
-npm run dev               # → http://localhost:3000
-```
 
-That is the whole setup. **The built index is committed to the repo**, so there
-is nothing to ingest before the app works — see [Why the index is in
-git](#why-the-index-is-committed).
+Create your environment file:
 
-To rebuild the corpus and index from scratch:
+cp .env.example .env
 
-```bash
-npm run check                    # verify the key and see which models it can reach
-npx playwright install chromium  # generation only, ~150 MB
-npm run generate                 # sampler → LLM → headshots → templates → 30 PDFs
-npm run ingest                   # PDFs → text → structured → chunks → SQLite + LanceDB
-npm run eval                     # precision/recall, agentic vs classic
-```
+Add your API key:
 
----
+GOOGLE_GENERATIVE_AI_API_KEY=your_api_key
 
-## The three questions this is built around
+Start the application:
 
-| Question | Shape | What it needs |
-|---|---|---|
-| *Who has experience with Python?* | aggregation | **all** matches, not a top-k slice |
-| *Which candidate graduated from UPC?* | exact / alias | an acronym matched against a full institution name |
-| *Summarize the profile of Jane Doe.* | whole document | the entire CV, not scattered chunks |
+npm run dev
 
-Two of the three are unanswerable by classic single-shot RAG. That is not a
-tuning problem, and it drives the whole retrieval design.
+Open:
 
----
+http://localhost:3000
 
-## Architecture
+The index is already included in the repository, so you can start the application without running the ingestion process.
 
-```mermaid
-flowchart TB
-  subgraph OFFLINE["OFFLINE — run once, output committed to git"]
-    direction TB
-    S["scripts/generate.ts<br/>seeded spec sampler"] --> L1["LLM<br/>structured output"]
-    L1 --> GT[("data/ground_truth/*.json<br/>the eval oracle")]
-    L1 --> IMG["image model<br/>→ headshot.png"]
-    L1 --> TPL["1 of 3 HTML templates<br/>→ Playwright"]
-    IMG --> TPL
-    TPL --> PDF[("data/cvs/*.pdf")]
+⸻
 
-    PDF --> EX["extract<br/>per-page text, column-aware<br/>vision fallback for image-only pages"]
-    EX --> PA["parse<br/>LLM structured extraction<br/>cached by content hash"]
-    PA --> NO["normalize<br/>alias-collapse skills + institutions"]
-    NO --> CH["chunk<br/>section-aware, identity-prefixed"]
-    CH --> EM["embed<br/>gemini-embedding-001, 768 dims"]
-    EM --> SQL[("SQLite<br/>candidates.db<br/>facts")]
-    EM --> LDB[("LanceDB<br/>index.lance<br/>vectors")]
-  end
+Rebuild the data
 
-  subgraph RUNTIME["RUNTIME — one Next.js process"]
-    direction TB
-    UI["useChat()"] -->|"POST /api/chat"| ST["streamText<br/>+ 3 tools, ≤5 steps"]
-    ST --> T1["search_cvs<br/>ANN over chunks"]
-    ST --> T2["filter_candidates<br/>parameterized SQL"]
-    ST --> T3["get_cv<br/>whole document"]
-    T1 --> ST
-    T2 --> ST
-    T3 --> ST
-    ST -->|"tool-call · tool-result · text"| UI
-    UI --> CIT["tool trace · answer · source chips · PDF at the cited page"]
-  end
+If you want to generate the CVs and rebuild the index from scratch:
 
-  SQL -.-> T2
-  SQL -.-> T3
-  LDB -.-> T1
-```
+npm run check
+npx playwright install chromium
+npm run generate
+npm run ingest
 
-**Offline** produces two files and commits them. **Runtime** is a single Next.js
-process that reads them. The model chooses which retriever to call per question,
-and both the tool calls and their results are streamed to the client rather than
-hidden — the interface's job is to make the retrieval visible.
+To run the evaluation:
 
-### Layout
+npm run eval
 
-```
-app/                 chat UI, /api/chat, /api/candidates, /api/chats, /api/cv/[id], /api/photo/[id]
-components/          sidebar, chat pane, message, tool trace, source chips, PDF dialog
+What these commands do
+
+generate
+   ↓
+Generate 30 synthetic CVs
+   ↓
+Create PDF files
+   ↓
+ingest
+   ↓
+Extract text
+   ↓
+Parse CV information
+   ↓
+Create chunks + embeddings
+   ↓
+SQLite + LanceDB
+
+⸻
+
+How the system works
+
+The system supports three main types of questions:
+
+Question	Type	Best approach
+Who has experience with Python?	Aggregation	SQL filter
+Which candidate graduated from UPC?	Exact search	SQL + aliases
+Summarize Jane Doe’s profile	Whole document	Full CV retrieval
+
+The main idea is simple:
+
+Different questions need different retrieval strategies.
+
+A normal RAG system usually retrieves the top-k most similar chunks. This works well for general semantic questions, but it is not always enough.
+
+For example:
+
+“Who has experience with Python?”
+
+If 19 candidates have Python experience, retrieving only the top 5 chunks cannot reliably return all 19 candidates.
+
+So this project uses three retrieval tools.
+
+⸻
+
+Architecture
+
+                    User
+                      |
+                      v
+                 Chat UI
+                      |
+                      v
+                AI Agent
+                      |
+          +-----------+-----------+
+          |           |           |
+          v           v           v
+     search_cvs   filter_candidates   get_cv
+          |           |           |
+          v           v           v
+      LanceDB      SQLite        SQLite
+      Vector DB    Filters       Full CV
+          |           |           |
+          +-----------+-----------+
+                      |
+                      v
+                  AI Answer
+                      |
+                      v
+              Sources + Pages
+
+Retrieval tools
+
+Tool	Storage	Used for
+search_cvs	LanceDB	Semantic / fuzzy search
+filter_candidates	SQLite	Exact filters, counts, and lists
+get_cv	SQLite	Full CV and profile summaries
+
+The AI decides which tool to use based on the question.
+
+⸻
+
+Why not use only classic RAG?
+
+Classic RAG normally works like this:
+
+Question
+   ↓
+Embedding
+   ↓
+Vector Search
+   ↓
+Top 5 chunks
+   ↓
+LLM
+   ↓
+Answer
+
+This is simple and works well for many questions.
+
+However, it has a problem with questions that need all matching candidates.
+
+For example, in this dataset:
+
+19 candidates have Python experience
+
+A top-5 search can only return up to 5 relevant chunks.
+
+In our evaluation:
+
+Python experience
+Tool-based RAG:  19 / 19
+Classic RAG:      4 / 19
+
+This is the main reason for using multiple retrieval tools.
+
+⸻
+
+Evaluation
+
+The project includes an evaluation set generated from the same ground-truth data used to create the CVs.
+
+This lets us compare:
+
+* Classic top-k RAG
+* Tool-based RAG
+
+Retrieval results
+
+The main result is:
+
+                    Precision    Recall
+Tool-based RAG         100%       100%
+Classic RAG             62%        65%
+
+For aggregation questions:
+
+Question                         Tool RAG      Classic RAG
+Python experience                 19 / 19        4 / 19
+Docker experience                 18 / 18        4 / 18
+Git experience                    15 / 15        5 / 15
+Spanish speakers                   7 / 7         5 / 7
+
+The tool-based approach can return the complete result set instead of only the top-k vector matches.
+
+Negative queries
+
+The evaluation also includes questions where the correct answer is nobody.
+
+For example:
+
+Who worked at Google?
+
+There are no Google employees in the dataset.
+
+The SQL filter correctly returns:
+
+0 candidates
+
+This is important because a vector search can still return similar CVs even when there is no correct match.
+
+⸻
+
+End-to-end evaluation
+
+The evaluation can also run through the real chat flow.
+
+Tool-based RAG
+Precision: 100%
+Recall:    100%
+Classic RAG
+Precision: 100%
+Recall:     22%
+
+The end-to-end test uses a small number of questions by default because Gemini’s free tier has request limits.
+
+npm run eval
+
+Run only the deterministic retrieval evaluation:
+
+EVAL_E2E=0 npm run eval
+
+Run a larger end-to-end evaluation:
+
+EVAL_E2E=13 npm run eval
+
+⸻
+
+Data and ingestion
+
+The CV dataset is synthetic and generated specifically for this project.
+
+The generator uses a fixed seed and predefined rules to create a diverse dataset.
+
+The corpus includes:
+
+* Different roles and seniority levels
+* Different cities and universities
+* Different employers
+* Different CV layouts
+* Two-column CVs
+* An image-only CV
+* Different languages
+* Exact evaluation cases
+
+For example, the dataset contains exactly one UPC graduate and no Google employees. This makes the evaluation predictable and reproducible.
+
+⸻
+
+PDF processing
+
+The ingestion pipeline handles two important PDF cases.
+
+Two-column CVs
+
+Some CVs use a two-column layout.
+
+PDF text extraction can mix content from both columns, so the ingestion process uses the position of text elements to detect the columns before creating the final text.
+
+Image-only CV
+
+One CV does not contain a text layer.
+
+If a page contains very little extracted text, the system uses a vision model to read the page.
+
+⸻
+
+Chunking and embeddings
+
+CVs are split by sections such as:
+
+Profile
+Skills
+Experience
+Education
+Languages
+
+Each chunk also includes the candidate’s identity.
+
+For example:
+
+Candidate: Xavier Prieto
+Section: Work Experience
+Data Scientist, Glovo (2023 - Present)
+Own the demand forecasting model...
+
+This makes retrieval and citations more reliable.
+
+The project uses Gemini Embeddings with 768 dimensions and stores the vectors in LanceDB.
+
+⸻
+
+Why SQLite + LanceDB?
+
+The project is designed to run locally with minimal setup.
+
+SQLite
+
+SQLite stores structured candidate information.
+
+It does not require:
+
+* PostgreSQL
+* Docker
+* A database server
+
+The database file can also be included in the repository.
+
+LanceDB
+
+LanceDB stores the vector embeddings and supports semantic search.
+
+It is also file-based, so no separate vector database server is needed.
+
+For a small local project like this, this keeps the setup simple.
+
+For a production system, PostgreSQL + pgvector would be a stronger option because structured filters and vector search can be handled in the same database.
+
+⸻
+
+Why no LangChain or LlamaIndex?
+
+The retrieval logic in this project is relatively small.
+
+The main parts are:
+
+* Retrieval
+* Tool routing
+* SQL filtering
+* Vector search
+* Citations
+
+Keeping these parts directly in the application makes the logic easier to understand and test.
+
+Each retrieval tool is also a normal function, so the evaluation can test it without calling an LLM.
+
+⸻
+
+Project structure
+
+app/
+  chat UI
+  API routes
+components/
+  chat
+  sidebar
+  messages
+  sources
+  PDF viewer
 lib/
-  llm.ts             provider wrapper — the only file that knows it's Gemini
-  agent.ts           system prompt, tool loop, classic-mode baseline
-  tools.ts           the 3 retrieval tools, callable without an LLM
-  stores.ts          node:sqlite + LanceDB clients
-  aliases.ts         institution + skill alias map
-  schemas.ts         CVProfile — shared by generation, ingest and eval
-  ingest/            extract · parse · normalize · chunk · index
-  chat-store.ts      conversation history, as an external store for React
-  chats-db.ts        SQLite behind /api/chats — separate from the committed index
+  agent.ts          AI agent and tool routing
+  tools.ts          Retrieval tools
+  llm.ts            LLM provider
+  stores.ts         SQLite and LanceDB
+  aliases.ts        Skill and university aliases
+  schemas.ts        Shared CV schema
+  ingest/           PDF processing and indexing
 scripts/
-  generate.ts        sampler → LLM → templates → Playwright → PDF
-  ingest.ts          orchestrates lib/ingest/*
-  lib/sampler.ts     seeded spec sampler
-  templates/         3 HTML/CSS CV templates
-eval/                questions derived from ground truth + the scored comparison
-data/                cvs/ · photos/ · ground_truth/ · candidates.db · index.lance
-                     chats.db is written at runtime and gitignored
-```
+  generate.ts       Generate synthetic CVs
+  ingest.ts         Build the index
+  lib/sampler.ts    Generate reproducible data
+  templates/        CV templates
+eval/
+  Evaluation tests
+data/
+  cvs/
+  photos/
+  ground_truth/
+  candidates.db
+  index.lance
 
----
+⸻
 
-## Design decisions
+Known limitations
 
-### Why tool-routed RAG, not classic top-k
+This is a technical prototype, so there are some limitations.
 
-Classic RAG embeds the question, takes the top *k* chunks, and stuffs them into
-the prompt. On this corpus that fails structurally, in two different ways:
+* SQLite and LanceDB are separate stores, so some complex queries need multiple tool calls.
+* PDF extraction is optimized for the three CV templates used in this project.
+* The CV parsing step uses an LLM, so incorrect extraction is possible.
+* There is no reranker for semantic search.
+* Chat history is designed for a local, single-user environment.
+* Gemini free-tier limits can affect large evaluations.
+* All CVs and candidate information are synthetic.
 
-**Recall is capped at *k*.** 19 of the 30 candidates list Python. "Who has
-experience with Python?" has a 19-element answer, and top-5 retrieval can return
-at most 5 of them. Raising *k* does not fix it — the correct answer is a *set*,
-and any ranked prefix of a set is the wrong shape of answer. The failure is also
-invisible: the model produces a confident, well-formed list that is simply
-incomplete.
+⸻
 
-**Acronyms cost precision, not recall.** I expected "UPC" to miss the one
-candidate whose CV says "Universitat Politècnica de Catalunya" — an acronym
-shares almost no surface form with its expansion. The measurement says
-otherwise: classic retrieval *does* surface them, at **100% recall but 25%
-precision**, burying the right graduate among three wrong ones. Thirty CVs of
-European engineers are all neighbours in vector space, so the correct answer
-arrives indistinguishable from the noise around it. The alias map turns that
-into an exact filter, which is why the agentic arm scores 100/100.
+Summary
 
-So the model routes between three retrievers instead of always calling one:
+The main idea of this project is:
 
-| Tool | Backing store | For |
-|---|---|---|
-| `search_cvs(query, top_k)` | LanceDB ANN | fuzzy, conceptual questions |
-| `filter_candidates({...})` | parameterized SQL over SQLite | aggregation, counts, exact attributes — returns **every** match plus a total |
-| `get_cv(candidate_id)` | SQLite | whole-document questions: summaries, profiles |
+Use the right retrieval method for the type of question.
 
-Vector search is retained as one of three routes, not replaced. Classic RAG is
-the degenerate case of this design with the other two tools removed — which is
-exactly how `mode: 'classic'` is implemented, so the eval compares the same code
-path minus the routing.
+Vector search is useful for semantic questions, but it is not always the best solution for exact filters, counting, or retrieving a complete CV.
 
-The measured difference is in [Evaluation](#evaluation). The toggle in the app
-header runs either mode live, so the difference is visible without running the
-suite.
+The system combines:
 
-### Why typed tool parameters, not text-to-SQL
+Vector Search
+     +
+SQL Filtering
+     +
+Full Document Retrieval
+     =
+More reliable CV answers
 
-Tool arguments are model-generated, which makes them untrusted input arriving at
-a SQL boundary. Every value goes through a `?` placeholder; there is no string
-interpolation into a query, and deliberately no `run_sql(query)` tool. At 30
-candidates text-to-SQL buys nothing and hands the model a shell.
-
-### Why no LangChain or LlamaIndex
-
-The graded artifact here *is* the chunking strategy, the retriever routing, the
-tool loop and the citation plumbing — and a framework hides all four behind
-`create_retrieval_chain`. Mixed SQL + vector retrieval with custom citation
-payloads is precisely the case where you end up subclassing framework internals
-to get back the control you started with. The loop itself is about forty lines
-(`lib/agent.ts`), and keeping it explicit is what makes it testable: every tool
-is a plain function the eval calls with no LLM in the loop.
-
-### Why SQLite, not Postgres
-
-A SQLite file can be committed to git; a Postgres database cannot. That single
-property is what lets a reviewer clone the repo and run two commands. `node:sqlite`
-is built into Node 22+, so it costs zero dependencies, no server and no Docker.
-
-**pgvector is the production path**, and the reason is specific: two stores means
-`filter_candidates` and `search_cvs` cannot be combined into one query, so a
-question like "senior Barcelona engineers who have worked on payment systems"
-has to be answered by ANDing tool results rather than by a single pre-filtered
-ANN scan. Postgres with pgvector unifies metadata filtering and vector search,
-and at a corpus size where the vector index no longer fits comfortably in a
-committed file, that is the right trade. At 30 CVs it is not.
-
-### Why LanceDB, not Chroma or Qdrant
-
-File-based and embedded, so it commits alongside the SQLite database and needs no
-server. At 300 chunks a brute-force scan over an array would genuinely also work;
-LanceDB is the version of that choice which still holds at 300,000.
-
-### Why the index is committed
-
-The app is not deployed, so the reviewer's local run *is* the product. Putting a
-quota-limited, twenty-minute ingest between a reviewer and a working demo would
-be the wrong default. `npm run ingest -- --rebuild` remains fully reproducible —
-it is just not mandatory.
-
-### Why a seeded sampler for the corpus
-
-Asking an LLM for "30 realistic CVs" returns 30 interchangeable mid-level backend
-engineers with interchangeable names — models collapse to the mode. Diversity is
-enforced in code instead: `scripts/lib/sampler.ts` draws role, seniority, city,
-university, employers, language and template from curated pools with a fixed
-seed, and the model only writes prose inside those constraints. It also makes
-generation reproducible, and it lets the corpus guarantee the properties the
-evaluation depends on — exactly one UPC graduate, three two-column CVs, two
-Spanish CVs, one image-only CV, and no FAANG employer anywhere, so "who worked at
-Google?" has a defensible "nobody".
-
-### Why section-aware, identity-prefixed chunks
-
-CVs already have the boundaries a sliding window would have to guess at, so
-chunking follows sections and splits work experience per role. Each chunk is
-prefixed with its identity before embedding:
-
-```
-Candidate: Xavier Prieto (cv_014) — Section: Work Experience
-Data Scientist, Glovo (2023-02 – Present). Own the demand-forecasting model…
-```
-
-An anonymous chunk reading "led the migration to Kubernetes" cannot be
-attributed, cannot be cited, and cannot be told apart from twenty-nine
-near-identical neighbours.
-
-### Why 768-dimension embeddings
-
-`gemini-embedding-001` is a Matryoshka model, so a truncated prefix is still a
-valid embedding. 768 instead of 3072 takes the committed index from ~4 MB to
-~1 MB at negligible quality cost at this scale. Document and query embeddings use
-`RETRIEVAL_DOCUMENT` and `RETRIEVAL_QUERY` respectively — they are asymmetric,
-and using one task type for both measurably costs recall.
-
----
-
-## Two things in the corpus that make ingest non-trivial
-
-Neither is incidental; the sampler is instructed to produce both.
-
-**Two-column layouts.** `pdf.js` returns text items in content-stream order,
-which for a sidebar template interleaves the sidebar with the main column:
-
-```
-C O N TA C T O xavier.prieto@proton.me +34 622 41 08 93 Barcelona, Spain
-C O M P E T E N C I A S Python SQL scikit-learn … Xavier P…
-```
-
-`lib/ingest/extract.ts` detects the column gutter from raw text-item geometry,
-splits the items, and only then clusters lines — doing it in the other order is
-the bug, because a sidebar entry and a main-column entry at the same height are
-not one line. It also repairs CSS letter-spacing, which `pdf.js` surfaces as
-`E D U C AT I O N`.
-
-**One CV with no text layer.** One PDF is rendered as a flattened bitmap. Pages
-that extract to fewer than 50 characters are rasterised and transcribed by the
-vision model instead.
-
----
-
-## Evaluation
-
-`npm run eval` measures agentic against classic retrieval in **two tiers**,
-because they answer different questions.
-
-The questions are **derived from `data/ground_truth/*.json`, not hand-written**.
-We generated the corpus, so we have a perfect oracle for it: the expected answer
-to "who has experience with Python?" is computed by scanning the ground truth,
-so it cannot drift out of sync with what was indexed and stays correct if the
-corpus is regenerated. Coverage spans all three question shapes from the brief,
-plus multi-constraint questions and negative cases where the correct answer is
-nobody.
-
-### Tier 1 — retrieval ceiling (deterministic, no chat model)
-
-The central claim is about the *retrieval layer*, not the model's prose, so it is
-measured without a chat model at all. Both arms get their best case: classic runs
-the same top-5 search the app's classic mode uses, and agentic runs the tool call
-that ideally answers the question, taken from the oracle rather than chosen by a
-model. That removes model variance from the headline number, so the gap is
-attributable to the architecture and nothing else.
-
-```
-question                                     shape            agentic P/R    classic P/R
-──────────────────────────────────────────── ──────────────── ────────────── ─────────────
-Who has experience with Python?              aggregation      100% /100%     100% / 21%
-Who has experience with Docker?              aggregation      100% /100%     100% / 22%
-Who has experience with Git?                 aggregation      100% /100%     100% / 33%
-How many candidates speak Spanish, and w...  aggregation      100% /100%     100% / 71%
-Which candidate graduated from UPC?          exact-filter     100% /100%      25% /100%
-Which candidates graduated from TCD?         exact-filter     100% /100%      67% /100%
-Which candidate graduated from KTH?          exact-filter     100% /100%      25% /100%
-Summarize the profile of Carla Serrano.      document         100% /100%     100% /100%
-Summarize the profile of Owen Byrne.         document         100% /100%     100% /100%
-Which senior candidates are based in São...  multi-constraint 100% /100%      33% /100%
-Which senior candidates are based in Hel...  multi-constraint 100% /100%      50% /100%
-Which candidates worked at Google?           negative         100% /100%       0% /  0%
-Who has experience with COBOL?               negative         100% /100%       0% /  0%
-──────────────────────────────────────────────────────────────────────────────────────────
-agentic (tool-routed)                                         precision 100%   recall 100%
-classic  (top-5)                                              precision  62%   recall  65%
-```
-
-**The headline is aggregation recall: 100% vs 37%.**
-
-```
-Who has experience with Python?    agentic 19/19   classic  4/19
-Who has experience with Docker?    agentic 18/18   classic  4/18
-Who has experience with Git?       agentic 15/15   classic  5/15
-How many candidates speak Spanish? agentic  7/7    classic  5/7
-```
-
-Classic returns 4 of 19 Python candidates because top-5 chunk retrieval can only
-ever reach 5 documents, and two of the five chunks belonged to the same person.
-This is not a tuning problem: raising *k* to 19 would still be a ranked prefix
-of a set, and *k* would have to be tuned per question to the size of an answer
-nobody knows in advance.
-
-The **negative cases** are the other clean result. Asked who worked at Google,
-classic retrieval dutifully returns its five nearest chunks — all wrong, scoring
-0% precision — while the filter returns nothing, which is the correct answer.
-
-### Tier 2 — end-to-end through the real chat path
-
-Tier 1 shows what each architecture *can* reach. Tier 2 confirms the model
-actually gets there, running the shipped prompt and tools:
-
-```
-END-TO-END — 2 questions through the real chat path
-agentic     precision 100%   recall 100%      agg-python cited 19/19 · agg-docker cited 18/18
-classic     precision 100%   recall  22%      agg-python cited  4/19 · agg-docker cited  4/18
-```
-
-The agentic path reaches its ceiling exactly. Both modes run the same prompt and
-the same code path, differing only in whether the tools are available —
-otherwise the comparison would measure something other than the retrieval
-strategy.
-
-Tier 2 costs several chat requests per question and Gemini's free tier allows
-**20 per day per model**, so it runs on a 2-question sample by default:
-
-```bash
-npm run eval              # retrieval ceiling + a 2-question end-to-end sample
-EVAL_E2E=0 npm run eval   # retrieval only — zero chat requests
-EVAL_E2E=13 npm run eval  # full end-to-end, needs generous quota
-```
-
-## Known limitations
-
-- **The two stores cannot be queried together.** A single pre-filtered
-  vector-plus-metadata query is not expressible here; multi-constraint questions
-  are answered by the model ANDing tool results across calls. pgvector is the fix,
-  at the cost of a database server.
-- **Extraction is tuned to templates we control.** The gutter detection and
-  letter-spacing repair were written against three known layouts. Real-world CVs
-  — tables, multi-page, scanned, hand-formatted — would need more than this, and
-  in Python PyMuPDF would do a better job than `pdf.js` does here.
-- **The parse stage trusts the LLM.** Extraction round-trips through a model, so
-  a hallucinated skill would enter the index as fact. The ground-truth diff
-  catches this for the synthetic corpus; a real one has no oracle.
-- **No reranker.** `search_cvs` returns raw ANN neighbours. A cross-encoder
-  rerank would improve the fuzzy path, and is the obvious next addition.
-- **Conversation history is single-user.** Chats are stored server-side in
-  `data/chats.db`, but there is no auth and no per-user scoping — every browser
-  that reaches the server sees the same history. That is correct for a local
-  tool and would need a session model before it was anything else.
-- **Free-tier rate limits.** A full `npm run eval` makes tens of multi-step model
-  calls and can take several minutes, or hit 429s, on a free key.
-- **All data is synthetic.** No real candidate information appears anywhere in
-  this repository.
+The evaluation shows that this approach can significantly improve recall for questions that require finding all matching candidates, while still keeping semantic search for questions where it works well.
