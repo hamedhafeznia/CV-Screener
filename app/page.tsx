@@ -1,14 +1,19 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
-import { ArrowUp, LayoutGrid, Square, TriangleAlert } from 'lucide-react';
-import { Button, Textarea } from '@/components/ui/primitives';
-import { CandidateSidebar } from '@/components/CandidateSidebar';
-import { Message } from '@/components/Message';
-import { EmptyState } from '@/components/EmptyState';
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import type { UIMessage } from 'ai';
+import { LayoutGrid } from 'lucide-react';
+import { Sidebar } from '@/components/Sidebar';
+import { ChatPane } from '@/components/ChatPane';
 import { cn } from '@/lib/utils';
+import {
+  getServerSnapshot,
+  getSnapshot,
+  removeSession,
+  saveMessages,
+  startDraft,
+  subscribe,
+} from '@/lib/chat-store';
 import type { Candidate } from '@/components/types';
 import type { ChatMode } from '@/lib/schemas';
 
@@ -18,25 +23,17 @@ interface Meta {
 }
 
 /**
- * The shell: a single inset frame, a breadcrumb bar, the roster, and the chat.
- * One screen, no navigation — everything the reviewer needs is already visible.
+ * The shell: one inset frame, a breadcrumb bar, the tabbed sidebar, and the
+ * active conversation. One screen, no navigation.
  */
 export default function Page() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [meta, setMeta] = useState<Meta>();
   const [rosterError, setRosterError] = useState<string>();
   const [mode, setMode] = useState<ChatMode>('agentic');
-  const [input, setInput] = useState('');
-  /** Wall-clock per answer, shown in the tool trace. */
-  const [durations, setDurations] = useState<Record<string, number>>({});
 
-  const { messages, sendMessage, status, error, stop } = useChat({
-    transport: new DefaultChatTransport({ api: '/api/chat', body: () => ({ mode }) }),
-  });
-
-  const busy = status === 'submitted' || status === 'streaming';
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const startedAt = useRef<number | null>(null);
+  const sessions = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/candidates')
@@ -49,27 +46,28 @@ export default function Page() {
       .catch((cause: Error) => setRosterError(cause.message));
   }, []);
 
-  // Stamp each assistant turn with how long it took, once it stops streaming.
-  useEffect(() => {
-    if (busy) return;
-    const last = messages.at(-1);
-    if (!last || last.role !== 'assistant' || startedAt.current === null) return;
-    const elapsed = (Date.now() - startedAt.current) / 1000;
-    startedAt.current = null;
-    setDurations((previous) => (last.id in previous ? previous : { ...previous, [last.id]: elapsed }));
-  }, [busy, messages]);
+  // Falling back to the first session means the initial render needs no state:
+  // on the server `sessions` is empty, and after hydration it is the draft.
+  const active = useMemo(
+    () => sessions.find((session) => session.id === selectedId) ?? sessions[0] ?? null,
+    [sessions, selectedId],
+  );
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [messages, status]);
+  const handleMessagesChange = useCallback(
+    (messages: UIMessage[]) => {
+      if (active) saveMessages(active.id, messages);
+    },
+    [active],
+  );
 
-  const submit = (text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed || busy) return;
-    startedAt.current = Date.now();
-    setInput('');
-    void sendMessage({ text: trimmed });
-  };
+  const handleNewChat = useCallback(() => setSelectedId(startDraft()), []);
+  const handleDeleteSession = useCallback((id: string) => setSelectedId(removeSession(id)), []);
+
+  // Saved chats only; an untouched draft has no history worth listing.
+  const savedSessions = useMemo(
+    () => sessions.filter((session) => session.messages.length > 0),
+    [sessions],
+  );
 
   return (
     <div className="h-dvh bg-page p-2.5">
@@ -82,11 +80,7 @@ export default function Page() {
           <span className="text-sm text-faint">/</span>
           <span className="text-sm text-muted">{candidates.length || '—'} CVs</span>
           <span className="text-sm text-faint">/</span>
-          <span className="text-sm text-muted">{mode}</span>
-          <span
-            className={cn('size-1.5 rounded-full transition-colors', busy ? 'bg-text' : 'bg-faint')}
-            aria-label={busy ? 'retrieving' : 'idle'}
-          />
+          <span className="truncate text-sm text-muted">{active?.title ?? 'New chat'}</span>
 
           <div className="ml-auto flex items-center rounded-full bg-surface p-0.5">
             {(['agentic', 'classic'] as const).map((value) => (
@@ -107,75 +101,29 @@ export default function Page() {
         </header>
 
         <div className="flex min-h-0 flex-1">
-          <CandidateSidebar candidates={candidates} error={rosterError} />
+          <Sidebar
+            candidates={candidates}
+            rosterError={rosterError}
+            sessions={savedSessions}
+            activeSessionId={active?.id ?? null}
+            onSelectSession={setSelectedId}
+            onNewChat={handleNewChat}
+            onDeleteSession={handleDeleteSession}
+          />
 
-          <main className="flex min-w-0 flex-1 flex-col">
-            <div className="min-h-0 flex-1 overflow-y-auto scrollbar-slim">
-              {messages.length === 0 ? (
-                <EmptyState total={candidates.length} chunks={meta?.chunks} onPick={submit} />
-              ) : (
-                <div className="mx-auto max-w-3xl space-y-8 px-8 py-8">
-                  {messages.map((message) => (
-                    <Message
-                      key={message.id}
-                      message={message}
-                      seconds={durations[message.id]}
-                      streaming={busy && message === messages.at(-1)}
-                    />
-                  ))}
-                  {status === 'submitted' ? <p className="text-xs text-faint">Retrieving…</p> : null}
-                  {error ? (
-                    <p className="flex items-start gap-2 rounded-[var(--radius)] bg-surface px-3.5 py-2.5 text-sm text-danger">
-                      <TriangleAlert className="mt-0.5 size-4 shrink-0" />
-                      {error.message}
-                    </p>
-                  ) : null}
-                  <div ref={bottomRef} />
-                </div>
-              )}
-            </div>
-
-            <div className="px-8 pb-6">
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  submit(input);
-                }}
-                className="mx-auto max-w-3xl rounded-[var(--radius-lg)] bg-surface px-4 pb-3 pt-3.5"
-              >
-                <Textarea
-                  value={input}
-                  onChange={(event) => setInput(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' && !event.shiftKey) {
-                      event.preventDefault();
-                      submit(input);
-                    }
-                  }}
-                  rows={1}
-                  placeholder="Ask about skills, universities, languages, or one candidate…"
-                  className="max-h-44 min-h-6"
-                  aria-label="Ask a question about the CVs"
-                />
-                <div className="mt-3 flex items-end justify-between gap-3">
-                  <span className="truncate text-xs text-faint">
-                    {meta?.model ?? '—'}
-                    <span className="ml-2 text-surface-2">·</span>
-                    <span className="ml-2">{meta?.chunks ?? '—'} chunks</span>
-                  </span>
-                  {busy ? (
-                    <Button type="button" size="icon" variant="outline" onClick={stop} aria-label="Stop">
-                      <Square className="size-3" />
-                    </Button>
-                  ) : (
-                    <Button type="submit" size="icon" disabled={!input.trim()} aria-label="Send">
-                      <ArrowUp className="size-4" />
-                    </Button>
-                  )}
-                </div>
-              </form>
-            </div>
-          </main>
+          {active ? (
+            <ChatPane
+              key={active.id}
+              initialMessages={active.messages}
+              mode={mode}
+              candidateCount={candidates.length}
+              chunks={meta?.chunks}
+              model={meta?.model}
+              onMessagesChange={handleMessagesChange}
+            />
+          ) : (
+            <main className="flex-1" />
+          )}
         </div>
       </div>
     </div>

@@ -96,10 +96,16 @@ export function ToolTrace({
           {done}/{tools.length}
           <StepDots done={done} total={tools.length} />
         </span>
-        <span className="text-surface-2">|</span>
-        <span className="tabular-nums">
-          {streaming ? `${steps} step${steps === 1 ? '' : 's'}` : seconds !== undefined ? `${seconds.toFixed(1)}s` : '—'}
-        </span>
+        {/* Elapsed is in-memory only, so a chat restored from storage has none.
+            Drop the segment rather than showing a placeholder for it. */}
+        {streaming || seconds !== undefined ? (
+          <>
+            <span className="text-surface-2">|</span>
+            <span className="tabular-nums">
+              {streaming ? `${steps} step${steps === 1 ? '' : 's'}` : `${seconds!.toFixed(1)}s`}
+            </span>
+          </>
+        ) : null}
         <ChevronRight className={cn('ml-auto size-3.5 shrink-0 transition-transform', open && 'rotate-90')} />
       </button>
 

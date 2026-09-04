@@ -299,8 +299,9 @@ than the retrieval strategy.
   catches this for the synthetic corpus; a real one has no oracle.
 - **No reranker.** `search_cvs` returns raw ANN neighbours. A cross-encoder
   rerank would improve the fuzzy path, and is the obvious next addition.
-- **No conversation memory beyond the message array.** The API is stateless by
-  design; nothing is persisted between sessions.
+- **Conversations are per-browser.** The API stays stateless by design, and chat
+  history is saved in `localStorage` rather than server-side — so it does not
+  follow you to another browser or machine, and clearing site data clears it.
 - **Free-tier rate limits.** A full `npm run eval` makes tens of multi-step model
   calls and can take several minutes, or hit 429s, on a free key.
 - **All data is synthetic.** No real candidate information appears anywhere in
