@@ -127,7 +127,9 @@ export function Avatar({
 export function ScrollArea({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
     <ScrollAreaPrimitive.Root className={cn('overflow-hidden', className)} type="hover">
-      <ScrollAreaPrimitive.Viewport className="size-full">{children}</ScrollAreaPrimitive.Viewport>
+      {/* Radix's viewport wraps children in a `display: table` div, which sizes to
+          content and lets long rows overflow horizontally. Force it back to block. */}
+      <ScrollAreaPrimitive.Viewport className="size-full [&>div]:!block">{children}</ScrollAreaPrimitive.Viewport>
       <ScrollAreaPrimitive.Scrollbar
         orientation="vertical"
         className="flex w-2 touch-none select-none p-0.5 transition-opacity"

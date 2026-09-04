@@ -42,3 +42,6 @@ yarn-error.log*
 
 # committed on purpose (PRD §10): data/cvs, data/photos,
 # data/ground_truth, data/candidates.db, data/index.lance
+
+# local-only scratch scripts (fixtures, one-off probes)
+/scripts/_*.ts
