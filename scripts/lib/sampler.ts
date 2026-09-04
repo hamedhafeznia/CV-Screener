@@ -392,6 +392,27 @@ const SENIORITY_WEIGHTS: [Seniority, number][] = [
   ['principal', 3],
 ];
 
+/**
+ * Presentation for the headshot prompt, looked up from the first name.
+ *
+ * Deliberately a lookup rather than an RNG draw: adding it must not perturb the
+ * seeded sequence, or every already-generated profile would change. It feeds
+ * only the image prompt — `CVProfile`, and therefore ground truth, is untouched.
+ *
+ * Without it the image model renders whatever face it defaults to, which put a
+ * young woman on Xavier Prieto's CV. Matching the name is a realism floor, not a
+ * claim that a name determines how someone looks.
+ */
+const FEMININE_NAMES = new Set([
+  'Marta', 'Núria', 'Carla', 'Laia', 'Irene', 'Lena', 'Katharina', 'Anja',
+  'Sanne', 'Femke', 'Aoife', 'Priya', 'Hannah', 'Elin', 'Aino', 'Giulia',
+  'Rita', 'Elif', 'Deniz', 'Beatriz', 'Camila', 'Ananya', 'Zofia', 'Thandi',
+]);
+
+export function presentationFor(name: string): 'woman' | 'man' {
+  return FEMININE_NAMES.has(name.split(/\s+/)[0]) ? 'woman' : 'man';
+}
+
 /* --------------------------------------------------------------- sample --- */
 
 export const DEFAULT_SEED = 20260904;

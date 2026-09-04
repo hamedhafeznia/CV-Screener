@@ -249,36 +249,102 @@ export async function embedQuery(text: string): Promise<number[]> {
 }
 
 /**
- * One headshot. Supports both Imagen models (via the image API) and the Gemini
- * *-image chat models (which return images as files on a text response).
+ * Which service draws the headshots.
  *
- * Returns null rather than throwing when image generation is unavailable —
- * headshots are not on the Gemini free tier, and a missing photo must never stop
- * the corpus from being generated. `scripts/generate.ts` falls back to a
- * deterministic local avatar.
+ *  pollinations — free, no account, no key at all. The default, for the same
+ *                 reason the built index is committed: a reviewer should be able
+ *                 to regenerate the corpus without signing up for anything.
+ *  gemini       — the Imagen / gemini-*-image models. Better faces, but image
+ *                 generation is not on the Gemini free tier.
+ *  none         — skip generation; every candidate gets the local avatar.
  */
-export async function generateHeadshot(prompt: string): Promise<Uint8Array | null> {
-  try {
-    if (IMAGE_MODEL.startsWith('imagen')) {
-      const { image } = await generateImage({
-        model: provider().image(IMAGE_MODEL),
-        prompt,
-        n: 1,
-        aspectRatio: '1:1',
-        providerOptions: { google: { personGeneration: 'allow_adult' } },
-      });
-      return image.uint8Array;
-    }
+export type ImageProvider = 'pollinations' | 'gemini' | 'none';
 
-    const result = await generateText({
-      model: provider()(IMAGE_MODEL),
+export const IMAGE_PROVIDER = (process.env.IMAGE_PROVIDER || 'pollinations') as ImageProvider;
+
+/**
+ * Free, keyless text-to-image. Seeded, so a given candidate always gets the same
+ * face — regenerating the corpus does not reshuffle everyone's photo.
+ *
+ * Returns JPEG; the caller normalises it to PNG.
+ */
+/**
+ * Anonymous access is rate limited, and the corpus generator runs candidates
+ * concurrently. Image requests are therefore serialised through their own gate
+ * and retried with backoff — a 429 here would otherwise silently downgrade a
+ * candidate to an initials avatar.
+ */
+let imageGate: Promise<unknown> = Promise.resolve();
+const IMAGE_SPACING_MS = 1500;
+const IMAGE_RETRIES = 4;
+
+async function pollinationsHeadshot(prompt: string, seed: number): Promise<Uint8Array | null> {
+  const url =
+    `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}` +
+    `?width=512&height=512&nologo=true&model=flux&seed=${seed}`;
+
+  const run = async (): Promise<Uint8Array> => {
+    for (let attempt = 0; ; attempt++) {
+      const response = await fetch(url, { headers: { 'user-agent': 'cv-screener/1.0' } });
+
+      if (response.status === 429 || response.status >= 500) {
+        if (attempt >= IMAGE_RETRIES) throw new Error(`pollinations ${response.status} after ${attempt + 1} attempts`);
+        await sleep(Math.min(3000 * 2 ** attempt, 24_000));
+        continue;
+      }
+      if (!response.ok) throw new Error(`pollinations ${response.status}`);
+
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8;
+      const isPng = bytes[0] === 0x89 && bytes[1] === 0x50;
+      if (!isJpeg && !isPng) throw new Error('pollinations returned a non-image body');
+      await sleep(IMAGE_SPACING_MS);
+      return bytes;
+    }
+  };
+
+  // Chain onto the gate so only one image request is in flight at a time.
+  const queued = imageGate.then(run, run);
+  imageGate = queued.catch(() => undefined);
+  return queued;
+}
+
+async function geminiHeadshot(prompt: string): Promise<Uint8Array | null> {
+  if (IMAGE_MODEL.startsWith('imagen')) {
+    const { image } = await generateImage({
+      model: provider().image(IMAGE_MODEL),
       prompt,
-      providerOptions: { google: { responseModalities: ['IMAGE'] } },
+      n: 1,
+      aspectRatio: '1:1',
+      providerOptions: { google: { personGeneration: 'allow_adult' } },
     });
-    const file = result.files.find((f) => f.mediaType.startsWith('image/'));
-    return file ? file.uint8Array : null;
+    return image.uint8Array;
+  }
+
+  const result = await generateText({
+    model: provider()(IMAGE_MODEL),
+    prompt,
+    providerOptions: { google: { responseModalities: ['IMAGE'] } },
+  });
+  const file = result.files.find((f) => f.mediaType.startsWith('image/'));
+  return file ? file.uint8Array : null;
+}
+
+/**
+ * One headshot, from whichever provider is configured.
+ *
+ * Returns null rather than throwing when generation is unavailable. A missing
+ * photo must never stop the corpus from being generated — `scripts/generate.ts`
+ * falls back to a deterministic local avatar.
+ */
+export async function generateHeadshot(prompt: string, seed = 0): Promise<Uint8Array | null> {
+  if (IMAGE_PROVIDER === 'none') return null;
+  try {
+    return IMAGE_PROVIDER === 'pollinations'
+      ? await pollinationsHeadshot(prompt, seed)
+      : await geminiHeadshot(prompt);
   } catch (error) {
-    console.warn(`  ! image generation unavailable (${(error as Error).message.split('\n')[0]})`);
+    console.warn(`  ! headshot unavailable via ${IMAGE_PROVIDER} (${(error as Error).message.split('\n')[0]})`);
     return null;
   }
 }

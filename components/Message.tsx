@@ -112,10 +112,13 @@ export function Message({
   message,
   seconds,
   streaming,
+  model,
 }: {
   message: UIMessage;
   seconds?: number;
   streaming: boolean;
+  /** Shown in the waiting label, so it names the model actually being called. */
+  model?: string;
 }) {
   const [open, setOpen] = useState<Citation | null>(null);
 
@@ -166,7 +169,7 @@ export function Message({
     }
   }
 
-  const phase = streaming ? derivePhase(message) : null;
+  const phase = streaming ? derivePhase(message, model) : null;
   const retrieving = streaming && tools.length > 0 && citations.length === 0;
 
   return (
@@ -183,7 +186,7 @@ export function Message({
         />
       ))}
 
-      {phase ? <Thinking label={phase} /> : null}
+      {phase ? <Thinking phase={phase} /> : null}
 
       {/* Sources hold a skeleton row while retrieval is still running, so the
           answer does not jump when the real chips arrive. */}

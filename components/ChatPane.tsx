@@ -120,13 +120,16 @@ export function ChatPane({
                   message={message}
                   seconds={durations[message.id]}
                   streaming={busy && message === messages.at(-1)}
+                  model={model}
                 />
               </div>
             ))}
             {/* Between send and the first streamed part there is no assistant
                 message yet, so the pending state is rendered here — anchored
                 where the answer itself will appear, not as a detached line. */}
-            {busy && messages.at(-1)?.role === 'user' ? <Thinking label="Thinking" /> : null}
+            {busy && messages.at(-1)?.role === 'user' ? (
+              <Thinking phase={{ label: `Asking ${model ?? 'the model'}`, source: 'model' }} />
+            ) : null}
             {error ? (
               <p className="flex items-start gap-2 rounded-[var(--radius)] bg-surface px-3.5 py-2.5 text-sm text-danger">
                 <TriangleAlert className="mt-0.5 size-4 shrink-0" />

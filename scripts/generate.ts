@@ -7,7 +7,8 @@
  * crash costs nothing and never re-bills an image. `--force` overrides.
  *
  *   npm run generate
- *   npm run generate -- --only cv_014 --force
+ *   npm run generate -- --only cv_014 --force        # everything, incl. the profile
+ *   npm run generate -- --force-photos               # new headshots, same corpus
  *   npm run generate -- --limit 3 --no-photos
  */
 import 'dotenv/config';
@@ -18,7 +19,7 @@ import { generateObject } from 'ai';
 import { chromium, type Browser } from 'playwright';
 import { CVProfileSchema, GeneratedCVSchema, type CVProfile } from '../lib/schemas';
 import { textModel } from '../lib/llm';
-import { sampleSpecs, type CVSpec } from './lib/sampler';
+import { presentationFor, sampleSpecs, type CVSpec } from './lib/sampler';
 import { avatarSvg, renderCV } from './templates';
 
 // Free tier is 20 requests/minute. Pace batch runs just under it so they proceed
@@ -36,6 +37,15 @@ const DIRS = {
 
 interface Args {
   force: boolean;
+  /**
+   * Regenerate photos only, reusing cached profiles.
+   *
+   * `--force` regenerates everything including the LLM-written profile, which
+   * rewrites ground truth and silently desyncs it from the committed index.
+   * Swapping in new headshots is a presentation change and should not touch the
+   * corpus, so it gets its own flag.
+   */
+  forcePhotos: boolean;
   photos: boolean;
   only: string[] | null;
   limit: number | null;
@@ -52,6 +62,7 @@ function parseArgs(argv: string[]): Args {
   const concurrency = value('--concurrency');
   return {
     force: argv.includes('--force'),
+    forcePhotos: argv.includes('--force-photos'),
     photos: !argv.includes('--no-photos'),
     only: only ? only.split(',').map((s) => s.trim()) : null,
     limit: limit ? Number(limit) : null,
@@ -130,26 +141,64 @@ async function buildProfile(spec: CVSpec, force: boolean): Promise<CVProfile> {
 /* --------------------------------------------------------------- photos --- */
 
 function headshotPrompt(spec: CVSpec): string {
+  // Roughly when they started working, so a principal engineer does not get a
+  // graduate's face.
+  const age = Math.min(64, 23 + spec.years);
   return [
-    `A professional corporate headshot photograph of one adult person, chest-up, facing the camera.`,
+    `A professional corporate headshot photograph of one ${age}-year-old ${presentationFor(spec.name)},`,
+    `chest-up, facing the camera, a working professional based in ${spec.city}.`,
     `Styling: ${spec.photo_hint}.`,
     `Shot on an 85mm lens at f/2.8, even soft key light, natural skin texture, sharp focus on the eyes.`,
     `Square crop. No text, no watermark, no logo, no border, one person only.`,
   ].join(' ');
 }
 
-/** Deterministic initials avatar, rasterised by the browser we already have open. */
-async function renderAvatarPng(browser: Browser, spec: CVSpec): Promise<Buffer> {
-  const page = await browser.newPage({ viewport: { width: 256, height: 256 } });
+/** Rasterise any markup to a square PNG, using the browser we already have open. */
+async function renderSquarePng(browser: Browser, body: string, size: number): Promise<Buffer> {
+  const page = await browser.newPage({ viewport: { width: size, height: size } });
   try {
-    await page.setContent(
-      `<body style="margin:0">${avatarSvg(spec.id, spec.name)}</body>`,
-      { waitUntil: 'load' },
-    );
+    await page.setContent(`<body style="margin:0">${body}</body>`, { waitUntil: 'load' });
     return await page.screenshot({ type: 'png' });
   } finally {
     await page.close();
   }
+}
+
+/** Deterministic initials avatar, for when no image provider is reachable. */
+function renderAvatarPng(browser: Browser, spec: CVSpec): Promise<Buffer> {
+  return renderSquarePng(browser, avatarSvg(spec.id, spec.name), 256);
+}
+
+/**
+ * Providers return whatever format they like — Pollinations gives JPEG — but the
+ * rest of the pipeline (photo route, templates, ground truth) assumes PNG at
+ * data/photos/{id}.png. Normalise here rather than leaking the format outward.
+ */
+/**
+ * Stored at 256px. The templates print the headshot in an ~84-100px box and the
+ * sidebar shows it at 28px, so 512 was three times more pixels than anything
+ * renders — and PNG is a poor format for photographs, so those pixels cost ~9x
+ * what the source JPEG did. At 256 the whole corpus stays inside the repo-size
+ * budget the PRD sets out in §10.
+ */
+const PHOTO_PX = 256;
+
+async function toPng(browser: Browser, bytes: Uint8Array): Promise<Buffer> {
+  const isPng = bytes[0] === 0x89 && bytes[1] === 0x50;
+  const mime = isPng ? 'image/png' : 'image/jpeg';
+  const dataUri = `data:${mime};base64,${Buffer.from(bytes).toString('base64')}`;
+  return renderSquarePng(
+    browser,
+    `<img src="${dataUri}" style="width:${PHOTO_PX}px;height:${PHOTO_PX}px;display:block">`,
+    PHOTO_PX,
+  );
+}
+
+/** A stable seed per candidate, so a regenerated corpus keeps the same faces. */
+function seedFor(id: string): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return hash % 1_000_000;
 }
 
 async function buildPhoto(
@@ -158,16 +207,16 @@ async function buildPhoto(
   args: Args,
 ): Promise<{ dataUri: string; generated: boolean }> {
   const file = path.join(DIRS.photos, `${spec.id}.png`);
-  if (!args.force && existsSync(file)) {
+  if (!args.force && !args.forcePhotos && existsSync(file)) {
     return { dataUri: toDataUri(await readFile(file)), generated: false };
   }
 
   let bytes: Buffer | null = null;
   if (args.photos) {
-    // Imported lazily so `--no-photos` runs never touch the image model.
+    // Imported lazily so `--no-photos` runs never touch an image provider.
     const { generateHeadshot } = await import('../lib/llm');
-    const image = await generateHeadshot(headshotPrompt(spec));
-    if (image) bytes = Buffer.from(image);
+    const image = await generateHeadshot(headshotPrompt(spec), seedFor(spec.id));
+    if (image) bytes = await toPng(browser, image);
   }
 
   const generated = bytes !== null;
@@ -266,7 +315,7 @@ async function main() {
 
   console.log(`\ndone — ${specs.length} PDFs in data/cvs, ${realHeadshots} AI headshots, ${specs.length - realHeadshots} fallback avatars.`);
   if (realHeadshots === 0 && args.photos) {
-    console.log('note: no image model reached. Set IMAGE_MODEL and enable billing to get real headshots.');
+    console.log('note: no image provider reached. Set IMAGE_PROVIDER=pollinations (free, no key) to get real headshots.');
   }
 }
 
