@@ -2,7 +2,6 @@ import { rm } from 'node:fs/promises';
 import type { DatabaseSync } from 'node:sqlite';
 import { EMBED_DIMS, embedDocuments } from '../llm';
 import { CHUNK_TABLE, LANCE_PATH, connectLanceForIngest, createDbForIngest } from '../stores';
-import type { CVProfile } from '../schemas';
 import type { Chunk } from './chunk';
 import type { NormalizedProfile } from './normalize';
 
