@@ -9,9 +9,9 @@ import type { EmbeddingModel, LanguageModel } from 'ai';
  * `embedDocuments`, `embedQuery`. Swapping providers is a change to this file.
  */
 
-export const LLM_MODEL = process.env.LLM_MODEL || 'gemini-2.5-flash';
+export const LLM_MODEL = process.env.LLM_MODEL || 'gemini-3.5-flash';
 export const EMBED_MODEL = process.env.EMBED_MODEL || 'gemini-embedding-001';
-export const IMAGE_MODEL = process.env.IMAGE_MODEL || 'imagen-4.0-fast-generate-001';
+export const IMAGE_MODEL = process.env.IMAGE_MODEL || 'gemini-3.1-flash-image';
 
 /**
  * 768 rather than the native 3072 (PRD §6.3). gemini-embedding-001 is a
