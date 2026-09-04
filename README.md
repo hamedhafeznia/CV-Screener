@@ -95,7 +95,7 @@ hidden — the interface's job is to make the retrieval visible.
 ### Layout
 
 ```
-app/                 chat UI, /api/chat, /api/candidates, /api/cv/[id], /api/photo/[id]
+app/                 chat UI, /api/chat, /api/candidates, /api/chats, /api/cv/[id], /api/photo/[id]
 components/          sidebar, chat pane, message, tool trace, source chips, PDF dialog
 lib/
   llm.ts             provider wrapper — the only file that knows it's Gemini
@@ -105,7 +105,8 @@ lib/
   aliases.ts         institution + skill alias map
   schemas.ts         CVProfile — shared by generation, ingest and eval
   ingest/            extract · parse · normalize · chunk · index
-  chat-store.ts      client-side conversation history (localStorage)
+  chat-store.ts      conversation history, as an external store for React
+  chats-db.ts        SQLite behind /api/chats — separate from the committed index
 scripts/
   generate.ts        sampler → LLM → templates → Playwright → PDF
   ingest.ts          orchestrates lib/ingest/*
@@ -113,6 +114,7 @@ scripts/
   templates/         3 HTML/CSS CV templates
 eval/                questions derived from ground truth + the scored comparison
 data/                cvs/ · photos/ · ground_truth/ · candidates.db · index.lance
+                     chats.db is written at runtime and gitignored
 ```
 
 ---
@@ -300,9 +302,10 @@ than the retrieval strategy.
   catches this for the synthetic corpus; a real one has no oracle.
 - **No reranker.** `search_cvs` returns raw ANN neighbours. A cross-encoder
   rerank would improve the fuzzy path, and is the obvious next addition.
-- **Conversations are per-browser.** The API stays stateless by design, and chat
-  history is saved in `localStorage` rather than server-side — so it does not
-  follow you to another browser or machine, and clearing site data clears it.
+- **Conversation history is single-user.** Chats are stored server-side in
+  `data/chats.db`, but there is no auth and no per-user scoping — every browser
+  that reaches the server sees the same history. That is correct for a local
+  tool and would need a session model before it was anything else.
 - **Free-tier rate limits.** A full `npm run eval` makes tens of multi-step model
   calls and can take several minutes, or hit 429s, on a free key.
 - **All data is synthetic.** No real candidate information appears anywhere in

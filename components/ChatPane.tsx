@@ -45,10 +45,21 @@ export function ChatPane({
   const bottomRef = useRef<HTMLDivElement>(null);
   const startedAt = useRef<number | null>(null);
 
-  // Persist on every settled change. Skipping the streaming states keeps us from
-  // writing a partial answer to storage dozens of times per turn.
+  const savedCount = useRef(-1);
+
+  /**
+   * Persist when the conversation *grows* and again when it settles.
+   *
+   * Saving only on settle would lose the question entirely if the answer never
+   * arrives — a rate-limit stall, a closed tab — which is exactly when you most
+   * want it back. Keying the mid-flight save on message count rather than
+   * content means a streaming answer costs one write when it starts, not one
+   * per token.
+   */
   useEffect(() => {
-    if (busy) return;
+    const grew = messages.length !== savedCount.current;
+    if (busy && !grew) return;
+    savedCount.current = messages.length;
     onMessagesChange(messages);
   }, [busy, messages, onMessagesChange]);
 

@@ -22,6 +22,7 @@ export function Sidebar({
   candidates,
   rosterError,
   sessions,
+  chatsError,
   activeSessionId,
   onSelectSession,
   onNewChat,
@@ -30,6 +31,7 @@ export function Sidebar({
   candidates: Candidate[];
   rosterError?: string;
   sessions: ChatSession[];
+  chatsError?: string | null;
   activeSessionId: string | null;
   onSelectSession: (id: string) => void;
   onNewChat: () => void;
@@ -103,6 +105,7 @@ export function Sidebar({
       ) : (
         <ChatsPane
           sessions={sessions}
+          error={chatsError}
           activeId={activeSessionId}
           onSelect={onSelectSession}
           onDelete={onDeleteSession}
@@ -200,15 +203,27 @@ function ResumesPane({
 
 function ChatsPane({
   sessions,
+  error,
   activeId,
   onSelect,
   onDelete,
 }: {
   sessions: ChatSession[];
+  error?: string | null;
   activeId: string | null;
   onSelect: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
+  if (error) {
+    return (
+      <ScrollArea className="flex-1">
+        <p className="px-5 py-3 text-sm leading-relaxed text-danger">
+          Chat history unavailable: {error}
+        </p>
+      </ScrollArea>
+    );
+  }
+
   if (sessions.length === 0) {
     return (
       <ScrollArea className="flex-1">

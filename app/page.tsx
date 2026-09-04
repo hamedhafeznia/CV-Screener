@@ -7,6 +7,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { ChatPane } from '@/components/ChatPane';
 import { cn } from '@/lib/utils';
 import {
+  getError,
   getServerSnapshot,
   getSnapshot,
   removeSession,
@@ -33,6 +34,7 @@ export default function Page() {
   const [mode, setMode] = useState<ChatMode>('agentic');
 
   const sessions = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const chatsError = useSyncExternalStore(subscribe, getError, () => null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -105,6 +107,7 @@ export default function Page() {
             candidates={candidates}
             rosterError={rosterError}
             sessions={savedSessions}
+            chatsError={chatsError}
             activeSessionId={active?.id ?? null}
             onSelectSession={setSelectedId}
             onNewChat={handleNewChat}

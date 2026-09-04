@@ -1,24 +1,21 @@
 import type { UIMessage } from 'ai';
 
 /**
- * Client-side chat persistence, exposed as an external store.
+ * Conversation history, exposed to React as an external store.
  *
- * The chat API is stateless by design (PRD §7.5) — the client holds the history
- * and posts the whole array each turn — so saving conversations needs no server
- * involvement at all. Keeping them in localStorage also means chat writes never
- * touch `data/candidates.db`, which is a committed build artifact and should
- * stay byte-identical to what ingest produced.
+ * This module is the only place that knows *where* chats live — the same seam
+ * `lib/llm.ts` provides for the model provider. It was localStorage first and is
+ * now `/api/chats` backed by `data/chats.db`; nothing else in the UI changed.
  *
  * Shaped for `useSyncExternalStore` rather than loaded through an effect: React
  * gets a stable server snapshot (empty) and a lazily-hydrated client one, which
- * avoids both the hydration mismatch and the cascading render that reading
- * storage into state during an effect would cause.
+ * avoids both the hydration mismatch and the cascading render that reading into
+ * state during an effect would cause.
+ *
+ * Writes are optimistic. The local cache updates immediately and the PUT follows,
+ * so a slow disk never shows up as input lag; a failed write leaves the in-memory
+ * conversation intact and is reported through `getError()`.
  */
-
-const KEY = 'cv-screener.chats.v1';
-
-/** Enough to browse recent work without risking the ~5 MB storage budget. */
-const MAX_SESSIONS = 40;
 
 export interface ChatSession {
   id: string;
@@ -28,8 +25,12 @@ export interface ChatSession {
   messages: UIMessage[];
 }
 
-function isBrowser(): boolean {
-  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+interface ChatDto {
+  id: string;
+  title: string;
+  createdAt: number;
+  updatedAt: number;
+  messages: unknown[];
 }
 
 export function newSessionId(): string {
@@ -62,52 +63,79 @@ const listeners = new Set<() => void>();
 
 /** Null until first read. Every mutation replaces it, so the ref is the version. */
 let cache: ChatSession[] | null = null;
+let hydrating = false;
+let error: string | null = null;
 
-function readStorage(): ChatSession[] {
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as ChatSession[];
-    if (!Array.isArray(parsed)) return [];
-    return parsed
-      .filter((s) => s && typeof s.id === 'string' && Array.isArray(s.messages))
-      .sort((a, b) => b.updatedAt - a.updatedAt);
-  } catch {
-    // Corrupt or unreadable storage is not worth failing the app over.
-    return [];
-  }
+function emit(): void {
+  for (const listener of listeners) listener();
 }
 
-function writeStorage(sessions: ChatSession[]): void {
-  if (!isBrowser()) return;
-  // Never store an untouched draft — an empty session on every page load would
-  // otherwise accumulate in the list.
-  const keep = sessions.filter((s) => s.messages.length > 0).slice(0, MAX_SESSIONS);
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(keep));
-  } catch {
-    // Quota exceeded: drop the oldest half and try once more before giving up.
-    try {
-      window.localStorage.setItem(KEY, JSON.stringify(keep.slice(0, Math.ceil(keep.length / 2))));
-    } catch {
-      /* Storage is unavailable; the in-memory sessions still work. */
-    }
-  }
+function commit(next: ChatSession[]): void {
+  cache = next;
+  emit();
 }
 
 /** Lazy hydrate. Always leaves at least one draft to land on. */
 function ensure(): ChatSession[] {
   if (cache === null) {
-    const stored = isBrowser() ? readStorage() : [];
-    cache = [createSession(), ...stored];
+    cache = [createSession()];
+    if (typeof window !== 'undefined' && !hydrating) {
+      hydrating = true;
+      void hydrate();
+    }
   }
   return cache;
 }
 
-function commit(next: ChatSession[]): void {
-  cache = next;
-  writeStorage(next);
-  for (const listener of listeners) listener();
+async function hydrate(): Promise<void> {
+  try {
+    const response = await fetch('/api/chats');
+    const body = (await response.json()) as { chats?: ChatDto[]; error?: string };
+    if (body.error) error = body.error;
+
+    const saved: ChatSession[] = (body.chats ?? []).map((chat) => ({
+      id: chat.id,
+      title: chat.title,
+      createdAt: chat.createdAt,
+      updatedAt: chat.updatedAt,
+      messages: chat.messages as UIMessage[],
+    }));
+
+    // Keep whatever draft the user is already sitting in, then append history.
+    const drafts = (cache ?? []).filter((s) => s.messages.length === 0);
+    commit([...drafts, ...saved.filter((s) => !drafts.some((d) => d.id === s.id))]);
+  } catch (cause) {
+    error = (cause as Error).message;
+    emit();
+  } finally {
+    hydrating = false;
+  }
+}
+
+async function put(session: ChatSession): Promise<void> {
+  try {
+    const response = await fetch(`/api/chats/${session.id}`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        title: session.title,
+        createdAt: session.createdAt,
+        updatedAt: session.updatedAt,
+        messages: session.messages,
+      }),
+    });
+    if (!response.ok) {
+      const body = (await response.json().catch(() => ({}))) as { error?: string };
+      error = body.error ?? `Failed to save chat (${response.status}).`;
+      emit();
+    } else if (error) {
+      error = null;
+      emit();
+    }
+  } catch (cause) {
+    error = (cause as Error).message;
+    emit();
+  }
 }
 
 export function subscribe(listener: () => void): () => void {
@@ -121,6 +149,11 @@ export function getSnapshot(): ChatSession[] {
 
 export function getServerSnapshot(): ChatSession[] {
   return EMPTY;
+}
+
+/** Non-fatal storage problems, surfaced in the sidebar rather than thrown. */
+export function getError(): string | null {
+  return error;
 }
 
 /** Record a turn. Names the session from its first question, and bumps it to the top. */
@@ -138,6 +171,7 @@ export function saveMessages(id: string, messages: UIMessage[]): void {
     updatedAt: messages.length > 0 ? Date.now() : current.updatedAt,
   };
   commit([updated, ...sessions.filter((s) => s.id !== id)]);
+  if (updated.messages.length > 0) void put(updated);
 }
 
 /** Returns the id to make active — reusing an existing empty draft if there is one. */
@@ -152,9 +186,17 @@ export function startDraft(): string {
 
 /** Returns the id to make active once `id` is gone. */
 export function removeSession(id: string): string {
+  const existing = ensure().find((s) => s.id === id);
   const remaining = ensure().filter((s) => s.id !== id);
   const next = remaining.length > 0 ? remaining : [createSession()];
   commit(next);
+
+  // Only saved conversations exist server-side; an unsaved draft has no row.
+  if (existing && existing.messages.length > 0) {
+    void fetch(`/api/chats/${id}`, { method: 'DELETE' }).catch(() => {
+      /* The row survives; the next hydrate will bring it back. */
+    });
+  }
   return next[0].id;
 }
 
