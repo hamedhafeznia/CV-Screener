@@ -79,6 +79,7 @@ export function ToolTrace({
   if (tools.length === 0) return null;
 
   const done = tools.filter((t) => t.part.state === 'output-available' || t.part.state === 'output-error').length;
+  const running = streaming && done < tools.length;
 
   return (
     <div className="rounded-[var(--radius)] bg-surface">
@@ -88,7 +89,8 @@ export function ToolTrace({
         aria-expanded={open}
         className="flex w-full items-center gap-3 px-3.5 py-2.5 text-left text-xs text-faint transition-colors hover:text-muted"
       >
-        <span className="tabular-nums">
+        {running ? <Loader2 className="size-3 shrink-0 animate-spin" /> : null}
+        <span className={cn('tabular-nums', running && 'shimmer')}>
           {tools.length} tool{tools.length === 1 ? '' : 's'}
         </span>
         <span className="text-surface-2">|</span>

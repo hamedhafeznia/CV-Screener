@@ -3,6 +3,7 @@
 import type { UIMessage } from 'ai';
 import { ToolTrace } from '@/components/ToolCallChip';
 import { SourceGrid } from '@/components/SourceCard';
+import { Thinking, derivePhase } from '@/components/Thinking';
 import { citationsFromOutput, toolNameOf, type Citation, type ToolPart } from '@/components/types';
 
 /**
@@ -40,23 +41,31 @@ function withEmphasis(text: string) {
  * and plain sentences, so paragraphs, bullets and bold are all this needs — and
  * a dependency-free version cannot render anything the model did not intend.
  */
-function AnswerText({ text }: { text: string }) {
+function AnswerText({ text, caret }: { text: string; caret?: boolean }) {
   const blocks = text.split(/\n{2,}/);
+  const lastBlock = blocks.length - 1;
   return (
     <div className="answer text-base leading-[1.7] text-text">
       {blocks.map((block, blockIndex) => {
         const lines = block.split('\n').filter((line) => line.trim());
         const bulleted = lines.length > 0 && lines.every((line) => /^\s*([-*•]|\d+[.)])\s+/.test(line));
+        const trailing = caret && blockIndex === lastBlock;
         if (bulleted) {
           return (
             <ul key={blockIndex}>
               {lines.map((line, i) => (
-                <li key={i}>{withEmphasis(line.replace(/^\s*([-*•]|\d+[.)])\s+/, ''))}</li>
+                <li key={i} className={trailing && i === lines.length - 1 ? 'caret' : undefined}>
+                  {withEmphasis(line.replace(/^\s*([-*•]|\d+[.)])\s+/, ''))}
+                </li>
               ))}
             </ul>
           );
         }
-        return <p key={blockIndex}>{withEmphasis(block)}</p>;
+        return (
+          <p key={blockIndex} className={trailing ? 'caret' : undefined}>
+            {withEmphasis(block)}
+          </p>
+        );
       })}
     </div>
   );
@@ -113,13 +122,18 @@ export function Message({
     }
   }
 
+  const phase = streaming ? derivePhase(message) : null;
+
   return (
     <div className="space-y-4">
       <ToolTrace tools={tools} steps={tools.length + 1} seconds={seconds} streaming={streaming} />
       {text.map((block, i) => (
-        <AnswerText key={i} text={block} />
+        <AnswerText key={i} text={block} caret={streaming && i === text.length - 1} />
       ))}
-      <SourceGrid citations={citations} />
+      {phase ? <Thinking label={phase} /> : null}
+      {/* Sources settle in once retrieval is done rather than shuffling as
+          each tool result lands. */}
+      {streaming ? null : <SourceGrid citations={citations} />}
     </div>
   );
 }

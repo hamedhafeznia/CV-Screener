@@ -6,6 +6,7 @@ import { DefaultChatTransport, type UIMessage } from 'ai';
 import { ArrowUp, Square, TriangleAlert } from 'lucide-react';
 import { Button, Textarea } from '@/components/ui/primitives';
 import { Message } from '@/components/Message';
+import { Thinking } from '@/components/Thinking';
 import { EmptyState } from '@/components/EmptyState';
 import type { ChatMode } from '@/lib/schemas';
 
@@ -73,34 +74,59 @@ export function ChatPane({
     setDurations((previous) => (last.id in previous ? previous : { ...previous, [last.id]: elapsed }));
   }, [busy, messages]);
 
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [following, setFollowing] = useState(true);
+
+  /**
+   * Follow the stream only while the reader is already at the bottom. Yanking
+   * the viewport back down while someone is scrolled up re-reading an earlier
+   * answer is the single most irritating thing a streaming chat can do.
+   */
   useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const onScroll = () => {
+      const distance = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight;
+      setFollowing(distance < 120);
+    };
+    scroller.addEventListener('scroll', onScroll, { passive: true });
+    return () => scroller.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!following) return;
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [messages, status]);
+  }, [following, messages, status]);
 
   const submit = (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || busy) return;
     startedAt.current = Date.now();
     setInput('');
+    setFollowing(true);
     void sendMessage({ text: trimmed });
   };
 
   return (
     <main className="flex min-w-0 flex-1 flex-col">
-      <div className="min-h-0 flex-1 overflow-y-auto scrollbar-slim">
+      <div ref={scrollerRef} className="min-h-0 flex-1 overflow-y-auto scrollbar-slim">
         {messages.length === 0 ? (
           <EmptyState total={candidateCount} chunks={chunks} onPick={submit} />
         ) : (
           <div className="mx-auto max-w-3xl space-y-8 px-8 py-8">
             {messages.map((message) => (
-              <Message
-                key={message.id}
-                message={message}
-                seconds={durations[message.id]}
-                streaming={busy && message === messages.at(-1)}
-              />
+              <div key={message.id} className="rise">
+                <Message
+                  message={message}
+                  seconds={durations[message.id]}
+                  streaming={busy && message === messages.at(-1)}
+                />
+              </div>
             ))}
-            {status === 'submitted' ? <p className="text-xs text-faint">Retrieving…</p> : null}
+            {/* Between send and the first streamed part there is no assistant
+                message yet, so the pending state is rendered here — anchored
+                where the answer itself will appear, not as a detached line. */}
+            {busy && messages.at(-1)?.role === 'user' ? <Thinking label="Thinking" /> : null}
             {error ? (
               <p className="flex items-start gap-2 rounded-[var(--radius)] bg-surface px-3.5 py-2.5 text-sm text-danger">
                 <TriangleAlert className="mt-0.5 size-4 shrink-0" />
