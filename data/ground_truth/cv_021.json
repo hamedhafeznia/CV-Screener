@@ -1,0 +1,94 @@
+{
+  "id": "cv_021",
+  "name": "Tomás Yılmaz",
+  "email": "tomas.yilmaz@gmail.com",
+  "phone": "+351 912 345 678",
+  "location": "Lisbon, Portugal",
+  "current_title": "DevOps Engineer",
+  "seniority": "mid",
+  "years_experience": 5,
+  "summary": "Mid-level DevOps Engineer with 5 years of experience streamlining cloud infrastructure and building resilient automation pipelines. Specialized in Kubernetes orchestration, Infrastructure as Code with Terraform, and GCP management for high-scale environments. Proven record of improving system uptime to 99.99% and reducing cloud operational costs.",
+  "skills": [
+    {
+      "name": "Kubernetes",
+      "category": "Cloud"
+    },
+    {
+      "name": "Terraform",
+      "category": "Tools"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "Linux",
+      "category": "Tools"
+    },
+    {
+      "name": "GCP",
+      "category": "Cloud"
+    },
+    {
+      "name": "CI/CD",
+      "category": "Tools"
+    },
+    {
+      "name": "Prometheus",
+      "category": "Tools"
+    },
+    {
+      "name": "Helm",
+      "category": "Tools"
+    },
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "Bash",
+      "category": "Languages"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Feedzai",
+      "title": "DevOps Engineer",
+      "start_date": "2022-06",
+      "end_date": "Present",
+      "description": "Architected automated CI/CD pipelines in GitLab for cloud-native fraud prevention services, accelerating deployment frequency by 300%. Managed enterprise Kubernetes clusters in GCP handling over 8,000 transactions per second with 99.99% uptime. Optimized infrastructure provisioning using Terraform modules, cutting cloud resource expenses by 22%."
+    },
+    {
+      "company": "Satispay",
+      "title": "DevOps Engineer",
+      "start_date": "2020-09",
+      "end_date": "2022-05",
+      "description": "Maintained secure Linux container infrastructure supporting high-volume mobile payment processing for 2 million active users. Streamlined microservice containerization using Docker and Helm, reducing build failures across 8 engineering teams by 40%. Implemented Prometheus and Grafana monitoring stacks to improve mean time to detection (MTTD) by 35 minutes."
+    },
+    {
+      "company": "Getir",
+      "title": "Junior DevOps Engineer",
+      "start_date": "2019-03",
+      "end_date": "2020-08",
+      "description": "Configured baseline GCP virtual machines and networking configurations using Terraform scripts for rapid regional expansions. Supported continuous integration flows for logistics services, decreasing deployment rollback rates from 12% to 2%. Managed automated Bash and Python scripts for server upkeep and centralized Linux log aggregation."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Instituto Superior Técnico",
+      "degree": "MSc",
+      "field": "Computer Science",
+      "end_year": 2019
+    }
+  ],
+  "languages": [
+    {
+      "language": "Italian",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C2"
+    }
+  ]
+}

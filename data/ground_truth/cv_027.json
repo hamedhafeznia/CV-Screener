@@ -1,0 +1,91 @@
+{
+  "id": "cv_027",
+  "name": "Irene Molina",
+  "email": "irene.molina.math@gmail.com",
+  "phone": "+34 644 12 38 90",
+  "location": "Madrid, Spain",
+  "current_title": "Junior Data Engineer",
+  "seniority": "junior",
+  "years_experience": 1,
+  "summary": "Junior Data Engineer with a strong foundation in Applied Mathematics, specializing in building reliable ETL pipelines and cloud infrastructure automation. Experienced in batch processing with Apache Spark and orchestrating workflows using Airflow on AWS. Demonstrated ability to optimize pipeline execution times and enforce data quality standards across engineering teams.",
+  "skills": [
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "SQL",
+      "category": "Languages"
+    },
+    {
+      "name": "Apache Spark",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Airflow",
+      "category": "Tools"
+    },
+    {
+      "name": "AWS",
+      "category": "Cloud"
+    },
+    {
+      "name": "Terraform",
+      "category": "Tools"
+    },
+    {
+      "name": "PostgreSQL",
+      "category": "Data"
+    },
+    {
+      "name": "dbt",
+      "category": "Tools"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Cabify",
+      "title": "Junior Data Engineer",
+      "start_date": "2023-10",
+      "end_date": "Present",
+      "description": "Maintains batch processing pipelines using Apache Spark and Airflow on AWS EMR, ingesting 600 GB of daily ride location telemetry. Provisioned staging environment resources via Terraform, decreasing deployment setup time by 35%. Implemented automated data validation checks in Python that reduced downstream analytical query failures by 20%."
+    },
+    {
+      "company": "Wallapop",
+      "title": "Data Engineering Intern",
+      "start_date": "2023-03",
+      "end_date": "2023-09",
+      "description": "Developed complex SQL queries and Python extraction scripts to populate PostgreSQL reporting tables used by 15 product managers. Refactored legacy Airflow DAGs for catalog indexing, cutting average pipeline runtime by 25 minutes. Automated cloud infrastructure provisioning using basic Terraform templates on AWS S3 and IAM."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad Autónoma de Madrid",
+      "degree": "BSc",
+      "field": "Applied Mathematics",
+      "end_year": 2023
+    }
+  ],
+  "languages": [
+    {
+      "language": "Spanish",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C2"
+    },
+    {
+      "language": "Italian",
+      "level": "B2"
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "id": "cv_011",
+  "name": "Carla Serrano",
+  "email": "carla.serrano.dev@gmail.com",
+  "phone": "+34 612 345 678",
+  "location": "Barcelona, Spain",
+  "current_title": "Full-Stack Tech Lead",
+  "seniority": "lead",
+  "years_experience": 10,
+  "summary": "Ingeniera con diez años de trayectoria profesional especializada en el diseño y despliegue de arquitecturas de software escalables y de alto rendimiento. Experta en liderar equipos técnicos ágiles y optimizar plataformas cloud utilizando tecnologías modernas como TypeScript, Node.js y React. Orientada a la mejora continua de procesos de ingeniería y a la consecución de objetivos de negocio cuantificables.",
+  "skills": [
+    {
+      "name": "TypeScript",
+      "category": "Languages"
+    },
+    {
+      "name": "Node.js",
+      "category": "Frameworks"
+    },
+    {
+      "name": "React",
+      "category": "Frameworks"
+    },
+    {
+      "name": "PostgreSQL",
+      "category": "Data"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "Next.js",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Redis",
+      "category": "Data"
+    },
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "AWS",
+      "category": "Cloud"
+    },
+    {
+      "name": "GraphQL",
+      "category": "Languages"
+    },
+    {
+      "name": "Kubernetes",
+      "category": "Tools"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Red Points",
+      "title": "Full-Stack Tech Lead",
+      "start_date": "2022-03",
+      "end_date": "Present",
+      "description": "Liderazgo técnico de un equipo multidisciplinar de 6 ingenieros enfocado en la plataforma de mitigación de fraude digital. Implementación de una nueva arquitectura basada en Next.js, Node.js y TypeScript que redujo el tiempo de renderizado inicial en un 45%. Optimización de las colas de procesamiento de datos con Redis y Docker, gestionando más de 10 millones de eventos diarios con una disponibilidad del 99.99%."
+    },
+    {
+      "company": "TravelPerk",
+      "title": "Senior Full-Stack Engineer",
+      "start_date": "2019-08",
+      "end_date": "2022-02",
+      "description": "Diseño y desarrollo de APIs robustas en Python y TypeScript para la gestión de reservas corporativas. Rediseño del motor de búsqueda de hoteles, bajando la latencia media de respuesta de 1.8 segundos a 600 milisegundos mediante estrategias de caché en Redis y optimización de consultas PostgreSQL. Mentoría técnica directa a 4 ingenieros de software de nivel medio."
+    },
+    {
+      "company": "Adevinta",
+      "title": "Senior Software Engineer",
+      "start_date": "2017-02",
+      "end_date": "2019-07",
+      "description": "Desarrollo full-stack de herramientas de monetización y pasarelas de pago utilizando React, Node.js y bases de datos PostgreSQL. Creación de microservicios escalables e independientes empaquetados con Docker, lo que redujo el tiempo de despliegue en producción a menos de 5 minutos. Colaboración en la migración de un monolito legacy hacia arquitecturas orientadas a eventos."
+    },
+    {
+      "company": "Wallapop",
+      "title": "Software Engineer",
+      "start_date": "2014-06",
+      "end_date": "2017-01",
+      "description": "Desarrollo de nuevas funcionalidades de chat y geolocalización utilizando React en el frontend y Node.js en el backend. Implementación de pruebas unitarias y de integración que elevaron la cobertura del código del 40% al 85%, disminuyendo drásticamente los errores reportados en producción. Colaboración en el mantenimiento de bases de datos relacionales PostgreSQL de alto volumen de datos."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universitat Pompeu Fabra",
+      "degree": "MSc",
+      "field": "Industrial Engineering",
+      "end_year": 2014
+    }
+  ],
+  "languages": [
+    {
+      "language": "Spanish",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C1"
+    }
+  ]
+}

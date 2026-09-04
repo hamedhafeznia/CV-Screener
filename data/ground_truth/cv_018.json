@@ -1,0 +1,87 @@
+{
+  "id": "cv_018",
+  "name": "Rohit Wójcik",
+  "email": "rohit.wojcik@outlook.com",
+  "phone": "+91 80 4912 8472",
+  "location": "Bangalore, India",
+  "current_title": "Backend Engineer",
+  "seniority": "mid",
+  "years_experience": 6,
+  "summary": "Backend Engineer with 6 years of experience designing and scaling high-throughput distributed systems. Specialized in building robust microservices using Java, gRPC, and REST, with a focus on optimizing database performance in PostgreSQL. Proven track record of improving system latency and infrastructure reliability in fast-paced product environments.",
+  "skills": [
+    {
+      "name": "Java",
+      "category": "Languages"
+    },
+    {
+      "name": "PostgreSQL",
+      "category": "Data"
+    },
+    {
+      "name": "gRPC",
+      "category": "Frameworks"
+    },
+    {
+      "name": "REST",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Docker",
+      "category": "Cloud"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    },
+    {
+      "name": "Spring Boot",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Redis",
+      "category": "Data"
+    },
+    {
+      "name": "Apache Kafka",
+      "category": "Tools"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Zomato",
+      "title": "Backend Engineer",
+      "start_date": "2021-06",
+      "end_date": "Present",
+      "description": "Re-architected the core order placement flow using Java and gRPC, reducing peak-hour latency by 35% and supporting up to 12,000 requests per second. Migrated legacy relational schemas to optimized PostgreSQL partition tables, improving query throughput by 40%. Collaborated within a team of 8 to deploy containerized microservices using Docker and monitored system health through distributed tracing."
+    },
+    {
+      "company": "Yoco",
+      "title": "Software Engineer",
+      "start_date": "2018-06",
+      "end_date": "2021-05",
+      "description": "Designed and maintained secure REST APIs handling payment processing for over 50,000 active merchant accounts. Integrated Redis caching layers to decrease primary database load by 25% during high-traffic promotional periods. Utilized Git for version control and spearheaded the transition of manual deployment scripts into automated CI/CD pipelines."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Indian Institute of Technology Bombay",
+      "degree": "MSc",
+      "field": "Computer Science",
+      "end_year": 2018
+    }
+  ],
+  "languages": [
+    {
+      "language": "Hindi",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C1"
+    },
+    {
+      "language": "French",
+      "level": "B1"
+    }
+  ]
+}

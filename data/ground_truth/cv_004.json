@@ -1,0 +1,97 @@
+{
+  "id": "cv_004",
+  "name": "Beatriz Barbosa",
+  "email": "beatriz.barbosa@gmail.com",
+  "phone": "+55 11 98122-3456",
+  "location": "São Paulo, Brazil",
+  "current_title": "Senior Product Manager",
+  "seniority": "senior",
+  "years_experience": 7,
+  "summary": "Data-driven Senior Product Manager with 7 years of experience scaling fintech and e-commerce platforms in Latin America. Proven track record of leveraging user research and analytics to optimize transaction conversion rates and drive digital wallet adoption. Adept at leading cross-functional squads to deliver high-impact features aligned with core business metrics.",
+  "skills": [
+    {
+      "name": "Jira",
+      "category": "Tools"
+    },
+    {
+      "name": "User Research",
+      "category": "Product"
+    },
+    {
+      "name": "SQL",
+      "category": "Data"
+    },
+    {
+      "name": "Figma",
+      "category": "Design"
+    },
+    {
+      "name": "Tableau",
+      "category": "Data"
+    },
+    {
+      "name": "Power BI",
+      "category": "Data"
+    },
+    {
+      "name": "A/B Testing",
+      "category": "Product"
+    },
+    {
+      "name": "Amplitude",
+      "category": "Tools"
+    },
+    {
+      "name": "Scrum",
+      "category": "Tools"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Nubank",
+      "title": "Senior Product Manager",
+      "start_date": "2022-10",
+      "end_date": "Present",
+      "description": "Led the core credit card acquisition team, managing a cross-functional squad of 12 engineers, designers, and data analysts. Redesigned the onboarding funnel using Figma for user flows and tracked performance via SQL, boosting user conversion rates by 14% and reducing drop-offs. Collaborated with risk teams to integrate dynamic credit scoring models, acquiring over 1.2M active cardholders in 18 months."
+    },
+    {
+      "company": "Ualá",
+      "title": "Product Manager",
+      "start_date": "2020-11",
+      "end_date": "2022-09",
+      "description": "Managed the personal loans product line, conducting qualitative User Research and implementing iterative A/B testing. Created operational dashboards in Tableau and Power BI to monitor portfolio health and repayment rates. Improved digital loan checkout completion by 18% and integrated credit bureau APIs to lower approval decision times to under 30 seconds."
+    },
+    {
+      "company": "Rappi",
+      "title": "Product Manager",
+      "start_date": "2019-03",
+      "end_date": "2020-10",
+      "description": "Owned checkout and native payment experiences for RappiPay in Brazil, managing backlog prioritization and sprint planning in Jira. Introduced localized payment methods that increased successful transactions by 6.2%. Reduced average transaction latency by 300ms through database query optimizations and API redesigns."
+    },
+    {
+      "company": "Mercado Libre",
+      "title": "Associate Product Manager",
+      "start_date": "2017-08",
+      "end_date": "2019-02",
+      "description": "Collaborated on checkout flow optimization for Mercado Pago, writing SQL queries to discover friction points in the conversion funnel. Implemented targeted user surveys that informed micro-interaction updates, reducing mobile cart abandonment by 5%. Managed cross-functional delivery milestones for 2 agile software development teams."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad de Buenos Aires",
+      "degree": "BSc",
+      "field": "Data Science",
+      "end_year": 2017
+    }
+  ],
+  "languages": [
+    {
+      "language": "Portuguese",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "id": "cv_014",
+  "name": "Xavier Prieto",
+  "email": "xavier.prieto@gmail.com",
+  "phone": "+34 612 345 678",
+  "location": "Barcelona, Spain",
+  "current_title": "Data Scientist",
+  "seniority": "mid",
+  "years_experience": 4,
+  "summary": "Data Scientist with 4 years of experience designing and deploying machine learning models to optimize marketplace dynamics and business operations. Skilled in building scalable pipeline architectures and translating complex dataset patterns into actionable product enhancements. Proven track record of collaborating with cross-functional teams to drive measurable conversion gains.",
+  "skills": [
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "SQL",
+      "category": "Languages"
+    },
+    {
+      "name": "scikit-learn",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Machine Learning",
+      "category": "Design"
+    },
+    {
+      "name": "Apache Spark",
+      "category": "Data"
+    },
+    {
+      "name": "Tableau",
+      "category": "Tools"
+    },
+    {
+      "name": "Snowflake",
+      "category": "Data"
+    },
+    {
+      "name": "Pandas",
+      "category": "Frameworks"
+    },
+    {
+      "name": "MLflow",
+      "category": "Tools"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Cabify",
+      "title": "Data Scientist",
+      "start_date": "2023-07",
+      "end_date": "Present",
+      "description": "Developed dynamic dispatch and demand prediction models using Python and scikit-learn to optimize vehicle allocation. Processed telemetry data from millions of monthly active trips via Apache Spark, reducing estimated time of arrival errors by 14%. Designed real-time monitoring workflows for model performance, reducing detection latency for prediction drift by 40%."
+    },
+    {
+      "company": "TravelPerk",
+      "title": "Data Scientist",
+      "start_date": "2022-01",
+      "end_date": "2023-06",
+      "description": "Engineered automated hotel recommendation algorithms on Snowflake and Python, improving flight-to-hotel booking conversion rates by 8.5%. Built and monitored model retraining pipelines using MLflow, reducing deployment times from days to under two hours. Maintained feature store tables to support a team of 6 engineers with clean, standardized analytical data."
+    },
+    {
+      "company": "Wallapop",
+      "title": "Data Scientist",
+      "start_date": "2020-10",
+      "end_date": "2021-12",
+      "description": "Designed search ranking features and buyer-seller matching heuristics using SQL and statistical modeling techniques. Implemented automated ETL cleaning pipelines that reduced processing times for listing analysis by 30%. Created interactive dashboards in Tableau to visualize search conversion rates, identifying key areas that increased platform transactions."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universitat Politècnica de Catalunya",
+      "degree": "MSc",
+      "field": "Computer Science",
+      "end_year": 2020
+    },
+    {
+      "institution": "Universitat Politècnica de Catalunya",
+      "degree": "BSc",
+      "field": "Data Science and Engineering",
+      "end_year": 2018
+    }
+  ],
+  "languages": [
+    {
+      "language": "Spanish",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    },
+    {
+      "language": "French",
+      "level": "B2"
+    }
+  ]
+}

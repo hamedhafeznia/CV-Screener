@@ -1,0 +1,98 @@
+{
+  "id": "cv_030",
+  "name": "Rodrigo Barbosa",
+  "email": "rodrigo.barbosa.qa@gmail.com",
+  "phone": "+54 9 11 5842-9103",
+  "location": "Buenos Aires, Argentina",
+  "current_title": "QA Automation Engineer",
+  "seniority": "mid",
+  "years_experience": 3,
+  "summary": "QA Automation Engineer with 3 years of experience designing and implementing automated testing frameworks for high-volume fintech and e-commerce platforms. Specialized in building reliable end-to-end web and API test suites, seamlessly integrated into CI/CD deployment pipelines. Proven track record of increasing test coverage and accelerating release cycles across multi-functional engineering teams.",
+  "skills": [
+    {
+      "name": "Selenium",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Cypress",
+      "category": "Frameworks"
+    },
+    {
+      "name": "TypeScript",
+      "category": "Languages"
+    },
+    {
+      "name": "Java",
+      "category": "Languages"
+    },
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "CI/CD",
+      "category": "Tools"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    },
+    {
+      "name": "Jira",
+      "category": "Tools"
+    },
+    {
+      "name": "Postman",
+      "category": "Tools"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "REST Assured",
+      "category": "Frameworks"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Ualá",
+      "title": "QA Automation Engineer",
+      "start_date": "2023-03",
+      "end_date": "Present",
+      "description": "Architected and maintained end-to-end web automation frameworks using Cypress and TypeScript for digital banking workflows serving over 5 million users. Integrated automated test execution into GitHub Actions CI/CD pipelines, reducing pre-release regression execution times from 4 hours to 25 minutes. Partnered with 10 backend engineers to implement API integration tests in Python, decreasing production bug rates by 38%."
+    },
+    {
+      "company": "Mercado Libre",
+      "title": "QA Automation Engineer",
+      "start_date": "2022-01",
+      "end_date": "2023-02",
+      "description": "Developed and scaled parallel cross-browser test suites using Java and Selenium WebDriver for payment processing services handling 1,500 transactions per second. Managed bug tracking workflows in Jira and integrated execution reports into continuous integration pipelines via Git. Automated RESTful API validation with REST Assured, raising regression coverage across checkout microservices to 88%."
+    },
+    {
+      "company": "Nubank",
+      "title": "Junior QA Engineer",
+      "start_date": "2021-04",
+      "end_date": "2021-12",
+      "description": "Created functional test automation scripts in Python to validate customer onboarding backend APIs across staging environments. Tracked defect lifecycles in Jira across 2 cross-functional squads comprising 14 engineers and product managers. Contributed to CI/CD pipeline step definitions using Git for code reviews and version management."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad de Buenos Aires",
+      "degree": "BSc",
+      "field": "Computer Science",
+      "end_year": 2021
+    }
+  ],
+  "languages": [
+    {
+      "language": "Portuguese",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    }
+  ]
+}

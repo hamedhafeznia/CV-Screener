@@ -1,0 +1,96 @@
+{
+  "id": "cv_006",
+  "name": "Felix Neumann",
+  "email": "felix.neumann.dev@gmail.com",
+  "phone": "+4917643210987",
+  "location": "Munich, Germany",
+  "current_title": "Senior Frontend Engineer",
+  "seniority": "senior",
+  "years_experience": 6,
+  "summary": "Performance-focused Senior Frontend Engineer with 6 years of experience building scalable web applications. Specialist in creating responsive user interfaces with React and TypeScript, optimizing build performance, and establishing robust automated testing suites. Proven track record of improving web vitals and conversion rates in fast-paced e-commerce and fintech environments.",
+  "skills": [
+    {
+      "name": "TypeScript",
+      "category": "Languages"
+    },
+    {
+      "name": "React",
+      "category": "Frameworks"
+    },
+    {
+      "name": "JavaScript",
+      "category": "Languages"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    },
+    {
+      "name": "Cypress",
+      "category": "Tools"
+    },
+    {
+      "name": "Next.js",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Redux Toolkit",
+      "category": "Tools"
+    },
+    {
+      "name": "Tailwind CSS",
+      "category": "Design"
+    },
+    {
+      "name": "GraphQL",
+      "category": "Data"
+    }
+  ],
+  "experience": [
+    {
+      "company": "N26",
+      "title": "Senior Frontend Engineer",
+      "start_date": "2022-03",
+      "end_date": "Present",
+      "description": "Led a team of 4 engineers in migrating core banking dashboards to Next.js and TypeScript, reducing initial page load time by 34%. Built reusable financial UI components covered by Cypress end-to-end testing, maintaining 95% test coverage. Collaborated with product owners to optimize user onboarding flows, resulting in a 12% increase in completed user registrations."
+    },
+    {
+      "company": "Zalando",
+      "title": "Frontend Engineer",
+      "start_date": "2020-05",
+      "end_date": "2022-02",
+      "description": "Developed and maintained high-traffic checkout micro-frontends serving over 10 million active users using React and JavaScript. Integrated performance monitoring tools to identify rendering bottlenecks, which reduced cumulative layout shift (CLS) by 40%. Collaborated within a cross-functional team of 8 to deliver localized promotional features under tight retail deadlines."
+    },
+    {
+      "company": "HelloFresh",
+      "title": "Frontend Developer",
+      "start_date": "2018-09",
+      "end_date": "2020-04",
+      "description": "Engineered responsive subscription-management web pages using React and Git, ensuring seamless mobile experience across devices. Optimized asset delivery pipelines, reducing overall bundle sizes by 120KB and boosting mobile conversion rates by 4.5%. Participated in bi-weekly sprint planning and code reviews to enforce architectural guidelines across a 15-person engineering department."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universität Potsdam",
+      "degree": "MSc",
+      "field": "Computer Science",
+      "end_year": 2018
+    },
+    {
+      "institution": "Universität Potsdam",
+      "degree": "BSc",
+      "field": "Computer Science",
+      "end_year": 2016
+    }
+  ],
+  "languages": [
+    {
+      "language": "German",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C1"
+    }
+  ]
+}

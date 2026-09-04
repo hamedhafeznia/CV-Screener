@@ -1,0 +1,100 @@
+{
+  "id": "cv_023",
+  "name": "Lena Brandt",
+  "email": "lena.brandt@gmail.com",
+  "phone": "+49 30 98765432",
+  "location": "Berlin, Germany",
+  "current_title": "Senior Backend Engineer",
+  "seniority": "senior",
+  "years_experience": 9,
+  "summary": "Senior Backend Engineer with 9 years of experience designing high-throughput distributed systems and data pipelines in tech enterprise environments. Specialized in Python microservice architectures, API performance tuning, and scalable database systems. Demonstrated track record of scaling core services, decreasing system latency, and lowering infrastructure spending.",
+  "skills": [
+    {
+      "name": "PostgreSQL",
+      "category": "Data"
+    },
+    {
+      "name": "REST",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    },
+    {
+      "name": "Elasticsearch",
+      "category": "Data"
+    },
+    {
+      "name": "gRPC",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "Redis",
+      "category": "Data"
+    },
+    {
+      "name": "Kubernetes",
+      "category": "Cloud"
+    },
+    {
+      "name": "Apache Kafka",
+      "category": "Data"
+    }
+  ],
+  "experience": [
+    {
+      "company": "HelloFresh",
+      "title": "Senior Backend Engineer",
+      "start_date": "2021-03",
+      "end_date": "Present",
+      "description": "Architected high-throughput fulfillment and logistics microservices in Python using gRPC and PostgreSQL, supporting 20,000 requests per minute during peak ordering windows. Migrated core inter-service communication pipelines from legacy REST endpoints to gRPC, reducing p99 latency by 40% and cutting cloud infrastructure costs by $130,000 annually. Integrated Elasticsearch to power real-time inventory query tools across 14 global distribution hubs, maintaining 99.99% operational uptime."
+    },
+    {
+      "company": "Personio",
+      "title": "Backend Engineer",
+      "start_date": "2018-01",
+      "end_date": "2021-02",
+      "description": "Engineered core HR data management microservices using Python and PostgreSQL for a platform serving over 500,000 active customer employees. Built fast audit trail search capabilities with Elasticsearch, improving query speeds from 750ms to under 35ms. Implemented Docker-based containerization and modernized CI/CD workflows using Git, enabling a cross-functional team of 7 to increase deployment velocity from bi-weekly to multiple production releases per day."
+    },
+    {
+      "company": "Zalando",
+      "title": "Software Engineer",
+      "start_date": "2015-04",
+      "end_date": "2017-12",
+      "description": "Developed automated checkout and order processing REST APIs using Python to handle flash sale traffic spikes of up to 45,000 concurrent sessions. Managed PostgreSQL cluster schema migrations, query optimization, and connection pooling to prevent database bottlenecks during peak sales events. Collaborated within an agile team of 6 engineers to re-architect transaction validation pipelines, reducing memory usage across execution nodes by 30%."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universität Potsdam",
+      "degree": "MSc",
+      "field": "Computer Science",
+      "end_year": 2015
+    },
+    {
+      "institution": "Universität Potsdam",
+      "degree": "BSc",
+      "field": "Computer Science",
+      "end_year": 2013
+    }
+  ],
+  "languages": [
+    {
+      "language": "German",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C2"
+    }
+  ]
+}

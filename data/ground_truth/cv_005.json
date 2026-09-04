@@ -1,0 +1,87 @@
+{
+  "id": "cv_005",
+  "name": "Declan Doyle",
+  "email": "declan.doyle.data@gmail.com",
+  "phone": "+353 83 456 7890",
+  "location": "Dublin, Ireland",
+  "current_title": "Data Scientist",
+  "seniority": "mid",
+  "years_experience": 6,
+  "summary": "Data Scientist with 6 years of experience building machine learning pipelines and analytical solutions within top-tier fintech companies. Expert in translating complex transactional data into predictive models and actionable business intelligence. Proven record of optimizing transaction latencies and increasing checkout conversion metrics through rigorous experimentation.",
+  "skills": [
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "SQL",
+      "category": "Languages"
+    },
+    {
+      "name": "scikit-learn",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Machine Learning",
+      "category": "Data"
+    },
+    {
+      "name": "Tableau",
+      "category": "Tools"
+    },
+    {
+      "name": "Apache Spark",
+      "category": "Cloud"
+    },
+    {
+      "name": "Power BI",
+      "category": "Tools"
+    },
+    {
+      "name": "Pandas",
+      "category": "Languages"
+    },
+    {
+      "name": "A/B Testing",
+      "category": "Product"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Revolut",
+      "title": "Data Scientist",
+      "start_date": "2021-08",
+      "end_date": "Present",
+      "description": "Deployed transaction-routing machine learning models in Python using scikit-learn, reducing processing latency by 14% and decreasing cross-border transaction costs. Developed scalable ETL pipelines using Apache Spark and SQL to ingest 20M+ daily events, presenting operational KPIs in interactive Tableau dashboards. Engineered and evaluated weekly multi-variant checkout A/B tests, increasing conversion rates by 4.2% for the commercial division."
+    },
+    {
+      "company": "Monzo",
+      "title": "Data Scientist",
+      "start_date": "2018-01",
+      "end_date": "2021-07",
+      "description": "Constructed customer churn prediction models leveraging Machine Learning algorithms, directly reducing customer attrition by 5.5% over 18 months. Built and automated localized business performance reports in Power BI to support active regional expansion strategies. Partnered with engineering teams to refactor legacy SQL queries, decreasing batch reporting pipeline latency from 12 hours to under 30 minutes."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Imperial College London",
+      "degree": "MSc",
+      "field": "Business Analytics",
+      "end_year": 2017
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "level": "Native"
+    },
+    {
+      "language": "Catalan",
+      "level": "B1"
+    }
+  ]
+}

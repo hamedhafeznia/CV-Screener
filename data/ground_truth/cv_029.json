@@ -1,0 +1,97 @@
+{
+  "id": "cv_029",
+  "name": "Owen Byrne",
+  "email": "owen.byrne@example.co.uk",
+  "phone": "+44 131 496 0182",
+  "location": "Edinburgh, United Kingdom",
+  "current_title": "Senior QA Automation Engineer",
+  "seniority": "senior",
+  "years_experience": 8,
+  "summary": "Senior QA Automation Engineer with 8 years of experience building scalable test frameworks across fintech and on-demand delivery platforms. Specializes in end-to-end web testing, API automation, and integrating continuous testing into CI/CD pipelines. Reduced regression testing execution time by 65% while leading quality strategy across multi-functional engineering teams.",
+  "skills": [
+    {
+      "name": "Selenium",
+      "category": "Frameworks"
+    },
+    {
+      "name": "CI/CD",
+      "category": "Tools"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    },
+    {
+      "name": "Java",
+      "category": "Languages"
+    },
+    {
+      "name": "TypeScript",
+      "category": "Languages"
+    },
+    {
+      "name": "Cypress",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Jira",
+      "category": "Tools"
+    },
+    {
+      "name": "Playwright",
+      "category": "Frameworks"
+    },
+    {
+      "name": "REST Assured",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Docker",
+      "category": "Cloud"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Wise",
+      "title": "Senior QA Automation Engineer",
+      "start_date": "2022-12",
+      "end_date": "Present",
+      "description": "Architected a TypeScript and Cypress test automation framework covering core cross-border payment flows, reducing nightly regression runtimes from 4 hours to 45 minutes. Integrated automated test suites directly into GitHub Actions CI/CD pipelines, increasing release deployment frequency from bi-weekly to daily. Led quality initiative across 3 pod teams comprising 18 engineers to enforce test coverage standards exceeding 85%."
+    },
+    {
+      "company": "Revolut",
+      "title": "Senior QA Automation Engineer",
+      "start_date": "2020-09",
+      "end_date": "2022-11",
+      "description": "Developed a Java and Selenium test infrastructure for retail banking web portals, expanding parallel execution capabilities to handle 200 concurrent browser instances. Decreased production critical bug reports by 40% through targeted API test automation using REST Assured. Managed test execution reporting and issue tracking using Jira dashboards to maintain visibility across 2 core product lines."
+    },
+    {
+      "company": "Monzo",
+      "title": "QA Automation Engineer",
+      "start_date": "2018-06",
+      "end_date": "2020-08",
+      "description": "Built end-to-end integration test suites for backend microservices using Java and Git, covering over 120 API endpoints. Collaborated with 8 developers to build automated smoke tests into deployment pipelines, reducing production hotfix frequency by 30%. Streamlined test data generation, cutting test setup latency by 50% across staging environments."
+    },
+    {
+      "company": "Deliveroo",
+      "title": "QA Engineer",
+      "start_date": "2016-07",
+      "end_date": "2018-05",
+      "description": "Created automated UI test scripts using Selenium and TypeScript for consumer ordering web platforms. Executed performance and regression testing across 4 regional markets, identifying critical checkout bottlenecks prior to feature launches. Maintained defect backlogs in Jira and reduced overall test suite failure flakiness from 12% to under 2%."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Imperial College London",
+      "degree": "BSc",
+      "field": "Data Science",
+      "end_year": 2016
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "level": "Native"
+    }
+  ]
+}

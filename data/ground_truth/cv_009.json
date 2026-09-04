@@ -1,0 +1,97 @@
+{
+  "id": "cv_009",
+  "name": "Femke Jansen",
+  "email": "femke.jansen@outlook.com",
+  "phone": "+31 6 4820 1934",
+  "location": "Amsterdam, Netherlands",
+  "current_title": "Senior Product Designer",
+  "seniority": "senior",
+  "years_experience": 8,
+  "summary": "Senior Product Designer with 8 years of experience designing high-scale fintech and e-commerce mobile applications. Proven record of optimizing conversion funnels and user retention through rigorous user testing, accessible UI architecture, and robust prototyping. Combines a analytical background in telecommunications engineering with a deep focus on scalable digital design.",
+  "skills": [
+    {
+      "name": "Figma",
+      "category": "Tools"
+    },
+    {
+      "name": "Design Systems",
+      "category": "Design"
+    },
+    {
+      "name": "User Research",
+      "category": "Product"
+    },
+    {
+      "name": "Illustration",
+      "category": "Design"
+    },
+    {
+      "name": "Accessibility",
+      "category": "Design"
+    },
+    {
+      "name": "Prototyping",
+      "category": "Design"
+    },
+    {
+      "name": "A/B Testing",
+      "category": "Product"
+    },
+    {
+      "name": "Interaction Design",
+      "category": "Design"
+    },
+    {
+      "name": "Wireframing",
+      "category": "Design"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Bunq",
+      "title": "Senior Product Designer",
+      "start_date": "2022-02",
+      "end_date": "Present",
+      "description": "Lead UX/UI redesign of the core mobile banking experience, increasing active monthly user retention by 14%. Direct the global token-based Design Systems built in Figma, ensuring seamless engineering handoff across 4 cross-functional development teams. Spearheaded deep-dive User Research sessions and end-to-end Prototyping that streamlined the onboarding flow, reducing customer drop-off rate by 18%."
+    },
+    {
+      "company": "Picnic",
+      "title": "Product Designer",
+      "start_date": "2020-03",
+      "end_date": "2022-01",
+      "description": "Designed features for the central grocery delivery and checkout flows, directly serving over 250,000 active users. Leveraged interactive Prototyping and custom Illustration to simplify cart manipulation mechanics for older demographics. Implemented rigorous Accessibility improvements across web and mobile platforms, bringing products to full WCAG 2.1 AA compliance."
+    },
+    {
+      "company": "Booking.com",
+      "title": "UX Designer",
+      "start_date": "2018-04",
+      "end_date": "2020-02",
+      "description": "Partnered with product managers and developers to scale hotel search UI components, driving a 2.1% uplift in search-to-booking conversions. Executed continuous A/B testing and quantitative User Research to validate high-fidelity Figma prototypes. Managed localization layout constraints across 40+ supported languages to optimize international booking paths."
+    },
+    {
+      "company": "Mollie",
+      "title": "Junior Product Designer",
+      "start_date": "2016-03",
+      "end_date": "2018-03",
+      "description": "Designed responsive web checkout interfaces and merchant dashboard screens, enhancing payment completion rates by 5% for small-to-medium enterprise customers. Conducted over 40 structured User Research interviews to map merchant integration friction points. Maintained the internal UI library component design and produced vector-based visual assets."
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Amsterdam",
+      "degree": "BSc",
+      "field": "Telecommunications Engineering",
+      "end_year": 2015
+    }
+  ],
+  "languages": [
+    {
+      "language": "Dutch",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    }
+  ]
+}

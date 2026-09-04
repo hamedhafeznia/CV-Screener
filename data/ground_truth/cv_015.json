@@ -1,0 +1,107 @@
+{
+  "id": "cv_015",
+  "name": "Elif Yılmaz",
+  "email": "elif.yilmaz.dev@gmail.com",
+  "phone": "+90 532 456 7890",
+  "location": "Istanbul, Türkiye",
+  "current_title": "Senior Full-Stack Engineer",
+  "seniority": "senior",
+  "years_experience": 10,
+  "summary": "Accomplished Senior Full-Stack Engineer with 10 years of experience designing and scaling web applications in high-throughput e-commerce, fintech, and AI localization sectors. Expert in modern JavaScript/TypeScript ecosystems, cloud-native deployments, and performance optimization of relational databases. Proven track record of delivering user-centric architectures that scale to millions of active users.",
+  "skills": [
+    {
+      "name": "TypeScript",
+      "category": "Languages"
+    },
+    {
+      "name": "Node.js",
+      "category": "Frameworks"
+    },
+    {
+      "name": "React",
+      "category": "Frameworks"
+    },
+    {
+      "name": "PostgreSQL",
+      "category": "Data"
+    },
+    {
+      "name": "Next.js",
+      "category": "Frameworks"
+    },
+    {
+      "name": "AWS",
+      "category": "Cloud"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "Redis",
+      "category": "Data"
+    },
+    {
+      "name": "GraphQL",
+      "category": "Languages"
+    },
+    {
+      "name": "Tailwind CSS",
+      "category": "Design"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Trendyol",
+      "title": "Senior Full-Stack Engineer",
+      "start_date": "2022-09",
+      "end_date": "Present",
+      "description": "Architected high-throughput merchant dashboard components using React, Next.js, and Node.js microservices. Optimized PostgreSQL queries and implemented AWS ElastiCache, reducing page-load latency by 35% for over 50,000 active daily merchants. Collaborated with product design teams to overhaul core checkout flows, yielding a 14% improvement in conversion rates."
+    },
+    {
+      "company": "Unbabel",
+      "title": "Senior Software Engineer",
+      "start_date": "2020-03",
+      "end_date": "2022-08",
+      "description": "Designed a translation pipeline management editor utilizing TypeScript, React, and serverless AWS Lambda backend services. Integrated real-time translation APIs handling 1.2M monthly requests with 99.99% system availability. Mentored 4 junior engineers and standardise code-review protocols, which reduced overall pull request lifecycle times by 20%."
+    },
+    {
+      "company": "Satispay",
+      "title": "Full-Stack Developer",
+      "start_date": "2017-05",
+      "end_date": "2020-02",
+      "description": "Built core mobile payment integration interfaces and internal tools using Node.js, TypeScript, and PostgreSQL. Maintained strict PCI-compliant transaction processing workflows, decreasing processing exceptions by 18%. Spearheaded the migration of deployment pipelines onto AWS ECS, reducing software release cycles from bi-weekly to daily deployments."
+    },
+    {
+      "company": "Feedzai",
+      "title": "Software Engineer",
+      "start_date": "2014-06",
+      "end_date": "2017-04",
+      "description": "Developed real-time fraud detection analytical dashboards using React and Node.js backend services. Designed data visualization charts capable of handling high-velocity datasets, reducing analysis interface loading times from 8 seconds to under 1.5 seconds. Worked within an agile squad of 8 engineers to deploy mission-critical updates to major enterprise banking partners."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Boğaziçi University",
+      "degree": "MSc",
+      "field": "Interaction Design",
+      "end_year": 2014
+    },
+    {
+      "institution": "Boğaziçi University",
+      "degree": "BSc",
+      "field": "Computer Engineering",
+      "end_year": 2012
+    }
+  ],
+  "languages": [
+    {
+      "language": "Italian",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    }
+  ]
+}

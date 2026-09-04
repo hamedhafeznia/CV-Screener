@@ -1,0 +1,94 @@
+{
+  "id": "cv_003",
+  "name": "Ananya Kowalczyk",
+  "email": "ananya.kowalczyk@protonmail.com",
+  "phone": "+48 22 620 00 00",
+  "location": "Warsaw, Poland",
+  "current_title": "Security Engineer",
+  "seniority": "mid",
+  "years_experience": 4,
+  "summary": "Security Engineer with 4 years of experience securing cloud-native environments and automating DevSecOps pipelines. Proven track record of implementing infrastructure-as-code security controls and reducing vulnerability debt in fast-scaling systems. Focused on building robust CI/CD scanning mechanisms that empower development teams to ship secure software faster.",
+  "skills": [
+    {
+      "name": "Linux",
+      "category": "Tools"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "CI/CD",
+      "category": "Tools"
+    },
+    {
+      "name": "Kubernetes",
+      "category": "Cloud"
+    },
+    {
+      "name": "Terraform",
+      "category": "Cloud"
+    },
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "AWS",
+      "category": "Cloud"
+    },
+    {
+      "name": "HashiCorp Vault",
+      "category": "Tools"
+    },
+    {
+      "name": "Trivy",
+      "category": "Tools"
+    },
+    {
+      "name": "OWASP Top 10",
+      "category": "Product"
+    }
+  ],
+  "experience": [
+    {
+      "company": "DocPlanner",
+      "title": "Security Engineer",
+      "start_date": "2022-10",
+      "end_date": "Present",
+      "description": "Designed and integrated automated container scanning using Trivy and Docker within GitLab CI/CD pipelines, reducing critical vulnerabilities in production by 64%. Engineered secure-by-default Terraform templates for AWS infrastructure, decreasing cloud security misconfigurations by 45%. Conducted threat modeling assessments for core healthtech services, collaborating with a team of 12 engineers to address architecture flaws."
+    },
+    {
+      "company": "Razorpay",
+      "title": "Security Analyst",
+      "start_date": "2021-06",
+      "end_date": "2022-09",
+      "description": "Secured high-throughput financial transaction endpoints handling over 4,000 requests per second by deploying automated runtime application self-protection. Managed secrets distribution utilizing HashiCorp Vault across multi-tenant Kubernetes clusters, successfully eliminating hardcoded credentials for 35 microservices. Orchestrated incident response workflows that reduced the average mean time to detect (MTTD) anomalies by 30%."
+    },
+    {
+      "company": "Zomato",
+      "title": "Associate Security Engineer",
+      "start_date": "2020-07",
+      "end_date": "2021-05",
+      "description": "Hardened Linux-based virtual machines and Kubernetes nodes in compliance with CIS benchmarks across staging and production environments. Developed custom Python scripts to audit code repositories for leaked API tokens, identifying and neutralizing 80+ security risks before deployment. Assisted development teams in understanding OWASP Top 10 vulnerabilities, improving overall code review efficiency by 15%."
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Warsaw",
+      "degree": "BSc",
+      "field": "Information Systems",
+      "end_year": 2020
+    }
+  ],
+  "languages": [
+    {
+      "language": "Hindi",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C1"
+    }
+  ]
+}

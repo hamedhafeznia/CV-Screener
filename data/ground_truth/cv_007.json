@@ -1,0 +1,98 @@
+{
+  "id": "cv_007",
+  "name": "Tomás Ricci",
+  "email": "tomas.ricci@gmail.com",
+  "phone": "+351912345678",
+  "location": "Lisbon, Portugal",
+  "current_title": "DevOps Engineer",
+  "seniority": "mid",
+  "years_experience": 3,
+  "summary": "DevOps Engineer with 3 years of experience optimizing cloud infrastructure and automation pipelines. Specialized in container orchestration and infrastructure as code to drive system reliability and deployment velocity. Pragmatic problem solver with a solid data science background and strong Python scripting capabilities.",
+  "skills": [
+    {
+      "name": "Kubernetes",
+      "category": "Tools"
+    },
+    {
+      "name": "Terraform",
+      "category": "Tools"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "Linux",
+      "category": "Tools"
+    },
+    {
+      "name": "Azure",
+      "category": "Cloud"
+    },
+    {
+      "name": "Prometheus",
+      "category": "Tools"
+    },
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "Helm",
+      "category": "Tools"
+    },
+    {
+      "name": "GitLab CI/CD",
+      "category": "Tools"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    },
+    {
+      "name": "Bash",
+      "category": "Languages"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Unbabel",
+      "title": "DevOps Engineer",
+      "start_date": "2023-01",
+      "end_date": "Present",
+      "description": "Engineered and maintained Azure-based Kubernetes (AKS) clusters supporting localization APIs, reducing infrastructure drift by 40% through declarative Terraform configurations. Implemented Prometheus and Grafana monitoring setups that decreased mean time to detect (MTTD) system anomalies from 25 minutes to under 3 minutes. Automated software delivery by building custom Python helper utilities within GitLab CI/CD pipelines."
+    },
+    {
+      "company": "Getir",
+      "title": "DevOps Engineer",
+      "start_date": "2022-03",
+      "end_date": "2022-12",
+      "description": "Optimized multi-tenant Docker container configurations on Linux hosts, improving microservice startup latency by 15%. Automated infrastructure provisioning with Terraform, reducing the onboarding setup time for new engineering environments from 3 days to under 45 minutes. Partnered with product teams to scale delivery systems, ensuring 99.9% uptime across production clusters."
+    },
+    {
+      "company": "Satispay",
+      "title": "Junior DevOps Engineer",
+      "start_date": "2021-03",
+      "end_date": "2022-02",
+      "description": "Developed Python automation scripts to replace manual log-rotation and daily backup jobs on Linux servers, saving 5 engineering hours per week. Assisted in migrating legacy payment-processing workloads into Docker containers. Configured basic Prometheus alerts and Grafana dashboards to track system resource utilization."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Boğaziçi University",
+      "degree": "MSc",
+      "field": "Data Science",
+      "end_year": 2021
+    }
+  ],
+  "languages": [
+    {
+      "language": "Italian",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    }
+  ]
+}

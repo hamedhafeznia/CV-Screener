@@ -1,0 +1,98 @@
+{
+  "id": "cv_013",
+  "name": "Pablo Bosch",
+  "email": "pablo.bosch.vidal@gmail.com",
+  "phone": "+34 689 42 15 87",
+  "location": "Barcelona, Spain",
+  "current_title": "Senior Backend Engineer",
+  "seniority": "senior",
+  "years_experience": 9,
+  "summary": "Ingeniero de software con más de 9 años de experiencia especializado en el diseño y escalado de sistemas distribuidos de alta disponibilidad. Experto en optimizar el rendimiento de arquitecturas backend utilizando tecnologías como Go, Python y bases de datos relacionales y en caché. Enfocado en la entrega de soluciones eficientes que reducen costes operativos y mejoran la experiencia del usuario final en plataformas de gran escala.",
+  "skills": [
+    {
+      "name": "Go",
+      "category": "Languages"
+    },
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "PostgreSQL",
+      "category": "Data"
+    },
+    {
+      "name": "Redis",
+      "category": "Data"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    },
+    {
+      "name": "REST",
+      "category": "Design"
+    },
+    {
+      "name": "Kubernetes",
+      "category": "Cloud"
+    },
+    {
+      "name": "AWS",
+      "category": "Cloud"
+    },
+    {
+      "name": "gRPC",
+      "category": "Design"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Glovo",
+      "title": "Senior Backend Engineer",
+      "start_date": "2021-06",
+      "end_date": "Present",
+      "description": "Lideré el rediseño del microservicio de asignación de pedidos utilizando Go y Redis, reduciendo la latencia de respuesta en un 35% y soportando picos de hasta 15,000 peticiones por segundo. Implementé flujos de integración continua con Docker y Kubernetes que disminuyeron el tiempo de despliegue de producción de 25 a 6 minutos para un equipo global de 14 desarrolladores."
+    },
+    {
+      "company": "Adevinta",
+      "title": "Backend Engineer",
+      "start_date": "2018-03",
+      "end_date": "2021-05",
+      "description": "Desarrollé APIs REST altamente escalables en Python y Go para la plataforma de mensajería interna, gestionando bases de datos PostgreSQL con más de 10 millones de usuarios activos diarios. Optimicé el sistema de almacenamiento en caché con Redis, lo que resultó en un ahorro de costes de infraestructura en AWS del 20% anual."
+    },
+    {
+      "company": "Cabify",
+      "title": "Software Engineer",
+      "start_date": "2015-09",
+      "end_date": "2018-02",
+      "description": "Diseñé y mantuve servicios críticos del backend utilizando Python y PostgreSQL, asegurando alta disponibilidad en el sistema de geolocalización de vehículos. Colaboré activamente en la migración de un monolito a una arquitectura orientada a servicios utilizando Git como sistema de control de versiones y Docker para homogeneizar los entornos de desarrollo locales."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad Politécnica de Madrid",
+      "degree": "MSc",
+      "field": "Telecommunications Engineering",
+      "end_year": 2015
+    }
+  ],
+  "languages": [
+    {
+      "language": "Spanish",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C1"
+    },
+    {
+      "language": "Catalan",
+      "level": "B1"
+    }
+  ]
+}

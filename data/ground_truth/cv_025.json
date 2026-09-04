@@ -1,0 +1,104 @@
+{
+  "id": "cv_025",
+  "name": "Sanne de Vries",
+  "email": "sanne.devries@outlook.com",
+  "phone": "+31 20 794 8210",
+  "location": "Amsterdam, Netherlands",
+  "current_title": "Product Manager",
+  "seniority": "mid",
+  "years_experience": 4,
+  "summary": "Data-driven Product Manager with 4 years of experience delivering scalable payment and e-commerce solutions across high-growth platforms. Skilled at bridging technical engineering capabilities with customer needs through quantitative analysis, user research, and continuous experimentation. Proven track record of optimizing conversion funnels, lowering system latency, and driving merchant growth.",
+  "skills": [
+    {
+      "name": "Jira",
+      "category": "Tools"
+    },
+    {
+      "name": "User Research",
+      "category": "Product"
+    },
+    {
+      "name": "SQL",
+      "category": "Data"
+    },
+    {
+      "name": "Figma",
+      "category": "Design"
+    },
+    {
+      "name": "Power BI",
+      "category": "Data"
+    },
+    {
+      "name": "Tableau",
+      "category": "Data"
+    },
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "A/B Testing",
+      "category": "Product"
+    },
+    {
+      "name": "Agile Methodology",
+      "category": "Product"
+    },
+    {
+      "name": "REST APIs",
+      "category": "Tools"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Adyen",
+      "title": "Product Manager",
+      "start_date": "2022-09",
+      "end_date": "Present",
+      "description": "Led cross-functional product initiatives for global payment checkout APIs, reducing integration latency by 35% for over 1,200 enterprise merchants. Utilized Figma and User Research sessions to redesign onboarding flows, increasing merchant self-service setup completion by 22%. Managed sprint planning and backlog refinement in Jira for a team of 8 software engineers and data analysts."
+    },
+    {
+      "company": "Booking.com",
+      "title": "Associate Product Manager",
+      "start_date": "2021-03",
+      "end_date": "2022-08",
+      "description": "Optimized localized search and checkout funnels across European markets serving 15 million monthly active users. Designed automated analytical workflows in Python and SQL to identify churn drivers, presenting insights via Tableau and Power BI dashboards. Spearheaded 18 A/B experiments that boosted booking conversion by 1.8% and generated an estimated €3.2M in incremental revenue."
+    },
+    {
+      "company": "Mollie",
+      "title": "Junior Product Manager",
+      "start_date": "2020-03",
+      "end_date": "2021-02",
+      "description": "Owned the roadmap for SEPA automated recurring payments, decreasing transaction failure rates from 4.1% to 1.5%. Synthesized qualitative insights from User Research and quantitative telemetry in SQL to streamline the merchant dashboard UI. Collaborated with engineering leads to document API specifications and maintain task workflows inside Jira."
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Amsterdam",
+      "degree": "MSc",
+      "field": "Electrical Engineering",
+      "end_year": 2020
+    },
+    {
+      "institution": "University of Amsterdam",
+      "degree": "BSc",
+      "field": "Electrical Engineering",
+      "end_year": 2018
+    }
+  ],
+  "languages": [
+    {
+      "language": "Dutch",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C2"
+    },
+    {
+      "language": "French",
+      "level": "B2"
+    }
+  ]
+}

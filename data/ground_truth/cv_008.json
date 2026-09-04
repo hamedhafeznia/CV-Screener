@@ -1,0 +1,98 @@
+{
+  "id": "cv_008",
+  "name": "Thandi Chandra",
+  "email": "thandi.chandra@outlook.com",
+  "phone": "+27 21 555 4321",
+  "location": "Cape Town, South Africa",
+  "current_title": "Principal Security Engineer",
+  "seniority": "principal",
+  "years_experience": 17,
+  "summary": "Analytically driven Principal Security Engineer with 17 years of experience securing complex cloud infrastructures and payment ecosystems. Proven track record of designing zero-trust architectures, automating compliance pipelines, and leading incident response teams. Expert in mathematical cryptography and hands-on secure systems engineering.",
+  "skills": [
+    {
+      "name": "Linux",
+      "category": "Tools"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "CI/CD",
+      "category": "Tools"
+    },
+    {
+      "name": "AWS",
+      "category": "Cloud"
+    },
+    {
+      "name": "Terraform",
+      "category": "Cloud"
+    },
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "Cryptography",
+      "category": "Security"
+    },
+    {
+      "name": "Threat Modeling",
+      "category": "Security"
+    },
+    {
+      "name": "Kubernetes Security",
+      "category": "Security"
+    },
+    {
+      "name": "IAM",
+      "category": "Security"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Razorpay",
+      "title": "Principal Security Engineer",
+      "start_date": "2019-01",
+      "end_date": "Present",
+      "description": "Spearheaded the architecture of a zero-trust network infrastructure across 400+ microservices on AWS, reducing the internal attack surface by 70%. Implemented automated compliance monitoring via Terraform and Python, cutting annual audit prep time from 3 weeks to 2 days. Led a cross-functional incident response team of 12 engineers, maintaining a mean time to resolution (MTTR) under 15 minutes for critical events."
+    },
+    {
+      "company": "Nexthink",
+      "title": "Senior Security Engineer",
+      "start_date": "2013-06",
+      "end_date": "2018-12",
+      "description": "Designed and integrated secure CI/CD pipelines utilizing Docker and Linux hardening techniques, scanning 100% of production container images and blocking 40+ high-severity vulnerabilities prior to deployment. Collaborated with 5 product squads to enforce secure coding practices, reducing OWASP Top 10 vulnerabilities in shipped code by 65%. Engineered a real-time SIEM pipeline handling 1.2 TB of security events daily."
+    },
+    {
+      "company": "DocPlanner",
+      "title": "Security Engineer",
+      "start_date": "2007-08",
+      "end_date": "2013-05",
+      "description": "Owned the application security program auditing and securing APIs processing 5M+ monthly appointments. Developed custom Python-based static analysis tools integrated into development environments, capturing security regressions with a 92% accuracy rate. Maintained hardened Linux operating systems across production environments, decreasing security patch drift to under 2%."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Indian Institute of Technology Bombay",
+      "degree": "PhD",
+      "field": "Applied Mathematics",
+      "end_year": 2007
+    }
+  ],
+  "languages": [
+    {
+      "language": "Hindi",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    },
+    {
+      "language": "Portuguese",
+      "level": "Conversational"
+    }
+  ]
+}

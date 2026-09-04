@@ -1,0 +1,111 @@
+{
+  "id": "cv_024",
+  "name": "Camila Barbosa",
+  "email": "camila.barbosa@gmail.com",
+  "phone": "+55 11 98412-3098",
+  "location": "São Paulo, Brazil",
+  "current_title": "Senior Data Engineer",
+  "seniority": "senior",
+  "years_experience": 9,
+  "summary": "Senior Data Engineer with 9 years of experience designing scalable data architectures, real-time streaming pipelines, and distributed processing systems across leading tech companies in Latin America. Specialized in building high-throughput infrastructure processing billions of daily events with high availability and low latency. Proven track record of optimizing cloud data infrastructure costs and driving analytics reliability.",
+  "skills": [
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "SQL",
+      "category": "Languages"
+    },
+    {
+      "name": "Apache Spark",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Airflow",
+      "category": "Tools"
+    },
+    {
+      "name": "AWS",
+      "category": "Cloud"
+    },
+    {
+      "name": "GCP",
+      "category": "Cloud"
+    },
+    {
+      "name": "Kafka",
+      "category": "Data"
+    },
+    {
+      "name": "Snowflake",
+      "category": "Data"
+    },
+    {
+      "name": "dbt",
+      "category": "Tools"
+    },
+    {
+      "name": "Terraform",
+      "category": "Tools"
+    },
+    {
+      "name": "PostgreSQL",
+      "category": "Data"
+    }
+  ],
+  "experience": [
+    {
+      "company": "iFood",
+      "title": "Senior Data Engineer",
+      "start_date": "2022-04",
+      "end_date": "Present",
+      "description": "Architected real-time order tracking pipelines processing over 150 million daily Kafka messages using Apache Spark Structured Streaming on AWS. Reduced end-to-end event processing latency from 4.5 seconds to 350 milliseconds across core logistics microservices. Migrated batch ETL orchestrations to Apache Airflow on AWS MWAA, improving pipeline reliability to 99.98% SLA compliance for 40+ analytics stakeholders."
+    },
+    {
+      "company": "Nubank",
+      "title": "Senior Data Engineer",
+      "start_date": "2019-12",
+      "end_date": "2022-03",
+      "description": "Designed and deployed credit risk features engine using Python, SQL, and Apache Spark on GCP Dataproc, serving real-time model scoring for 12M active credit card users. Optimized BigQuery and Cloud Storage resource utilization using Terraform and dbt, reducing monthly infrastructure spending by $180,000. Mentored a pod of 5 mid-level engineers on streaming state management and data quality framework adoption."
+    },
+    {
+      "company": "Ualá",
+      "title": "Data Engineer",
+      "start_date": "2017-09",
+      "end_date": "2019-11",
+      "description": "Built automated financial reconciliation pipelines handling $40M in daily transaction volume using Python, PostgreSQL, and AWS Glue. Streamlined fraud detection dataset creation by integrating Kafka streaming pipelines with S3 data lakes, increasing fraud capture speed by 40%. Implemented automated data validation suites that intercepted over 200 pipeline schema anomalies annually prior to production ingestion."
+    },
+    {
+      "company": "Mercado Libre",
+      "title": "Data Engineer",
+      "start_date": "2015-03",
+      "end_date": "2017-08",
+      "description": "Developed batch data processing workflows using Python, Apache Spark, and SQL to analyze search relevance and buyer conversion metrics across 50M listing items. Maintained legacy Airflow DAGs and relational data warehouses supporting core marketplace executive reporting dashboards. Improved query performance by 65% through optimized partition strategies and column store compression."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad de Buenos Aires",
+      "degree": "MSc",
+      "field": "Applied Mathematics",
+      "end_year": 2015
+    },
+    {
+      "institution": "Universidad de Buenos Aires",
+      "degree": "BSc",
+      "field": "Mathematics",
+      "end_year": 2013
+    }
+  ],
+  "languages": [
+    {
+      "language": "Portuguese",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C2"
+    }
+  ]
+}

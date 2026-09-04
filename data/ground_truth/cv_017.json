@@ -1,0 +1,105 @@
+{
+  "id": "cv_017",
+  "name": "Carla Puig",
+  "email": "carla.puig.developer@gmail.com",
+  "phone": "+34 612 345 678",
+  "location": "Madrid, Spain",
+  "current_title": "Principal Machine Learning Engineer",
+  "seniority": "principal",
+  "years_experience": 16,
+  "summary": "Principal Machine Learning Engineer with 16 years of experience designing and scaling production-grade ML systems across logistics, SaaS, and cybersecurity. Expert in building deep learning architectures, optimizing high-throughput inference engines, and leading technical strategy for cross-functional platform teams. Proven track record of translating complex algorithmic research into substantial infrastructure cost savings and operational efficiencies.",
+  "skills": [
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "PyTorch",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Machine Learning",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "Kubernetes",
+      "category": "Cloud"
+    },
+    {
+      "name": "Deep Learning",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Computer Vision",
+      "category": "Frameworks"
+    },
+    {
+      "name": "AWS",
+      "category": "Cloud"
+    },
+    {
+      "name": "MLflow",
+      "category": "Tools"
+    },
+    {
+      "name": "SQL",
+      "category": "Data"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Glovo",
+      "title": "Principal Machine Learning Engineer",
+      "start_date": "2021-09",
+      "end_date": "Present",
+      "description": "Architected and deployed a PyTorch-based real-time courier dispatch routing optimization system serving 2M daily active orders. Reduced average delivery latency by 14% and computing infrastructure costs by $1.2M annually utilizing auto-scaling Kubernetes clusters and optimized Docker containers. Led technical strategy for 3 cross-functional ML platform teams totaling 18 engineers."
+    },
+    {
+      "company": "Typeform",
+      "title": "Lead Machine Learning Engineer",
+      "start_date": "2017-04",
+      "end_date": "2021-08",
+      "description": "Designed and implemented Deep Learning models for automated form generation and semantic conversion optimization, improving form completion rates by 8.5%. Built the core Python-based ML training pipeline from scratch, managing a throughput of 50M API requests daily. Scaled the serving infrastructure on AWS using Docker, reducing model training cycle times from days to under 4 hours."
+    },
+    {
+      "company": "Red Points",
+      "title": "Senior Machine Learning Engineer",
+      "start_date": "2012-10",
+      "end_date": "2017-03",
+      "description": "Developed Computer Vision algorithms for automated trademark and copyright infringement detection across 100 online marketplaces. Built deep learning image classification models that identified fraudulent listings with 99.2% accuracy, reducing manual review volume by 65%. Automated image preprocessing pipelines using Python, scaling throughput to handle over 10M images daily."
+    },
+    {
+      "company": "Factorial",
+      "title": "Machine Learning Engineer",
+      "start_date": "2008-07",
+      "end_date": "2012-09",
+      "description": "Implemented early Machine Learning and predictive algorithms for HR document parsing and categorization, reducing manual data entry for clients by 40%. Built backend Python services to support high-throughput document processing pipelines. Maintained and optimized database queries to reduce application response latency by 250ms."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universitat Pompeu Fabra",
+      "degree": "BSc",
+      "field": "Computer Science",
+      "end_year": 2008
+    }
+  ],
+  "languages": [
+    {
+      "language": "Spanish",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C2"
+    },
+    {
+      "language": "German",
+      "level": "B1"
+    }
+  ]
+}

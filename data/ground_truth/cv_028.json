@@ -1,0 +1,94 @@
+{
+  "id": "cv_028",
+  "name": "Oskar Åberg",
+  "email": "oskar.aberg@example.com",
+  "phone": "+46 8 123 4567",
+  "location": "Stockholm, Sweden",
+  "current_title": "Mobile Tech Lead",
+  "seniority": "lead",
+  "years_experience": 13,
+  "summary": "Mobile engineering leader with 13 years of experience architecting high-performance iOS and Android applications for fintech and streaming platforms. Demonstrated success in leading engineering teams, reducing release cycles, and optimizing app performance for millions of active users. Expert in modern mobile architectures, native development, and cross-platform solutions.",
+  "skills": [
+    {
+      "name": "Swift",
+      "category": "Languages"
+    },
+    {
+      "name": "Kotlin",
+      "category": "Languages"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    },
+    {
+      "name": "REST",
+      "category": "Data"
+    },
+    {
+      "name": "GraphQL",
+      "category": "Data"
+    },
+    {
+      "name": "React Native",
+      "category": "Frameworks"
+    },
+    {
+      "name": "CI/CD",
+      "category": "Tools"
+    },
+    {
+      "name": "Fastlane",
+      "category": "Tools"
+    },
+    {
+      "name": "TypeScript",
+      "category": "Languages"
+    },
+    {
+      "name": "Mobile Architecture",
+      "category": "Design"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Spotify",
+      "title": "Mobile Tech Lead",
+      "start_date": "2019-06",
+      "end_date": "Present",
+      "description": "Directs an 11-person cross-functional mobile engineering team delivering core playback and interface modules across iOS and Android platforms. Spearheaded the migration to a unified GraphQL layer and optimized modern CI/CD pipelines, cutting build validation times by 45%. Scaled infrastructure supporting 150M+ monthly active users while reducing crash rates to under 0.05%."
+    },
+    {
+      "company": "Klarna",
+      "title": "Senior Mobile Engineer",
+      "start_date": "2015-03",
+      "end_date": "2019-05",
+      "description": "Architected high-throughput checkout modules integrating native Swift and Kotlin components with React Native interfaces. Redesigned network caching and REST API integrations, reducing payment screen render latency from 1.4 seconds to 380 milliseconds. Mentored 8 mid-level developers and introduced automated end-to-end testing that increased feature release confidence."
+    },
+    {
+      "company": "Tink",
+      "title": "Mobile Engineer",
+      "start_date": "2011-06",
+      "end_date": "2015-02",
+      "description": "Developed financial account aggregation features for consumer-facing banking applications built on early native platforms and REST services. Established core Git branching workflows and automated build checks for a growing team of 6 engineers. Improved local data persistence efficiency, reducing app memory usage by 30% across 500k active user devices."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Aalto University",
+      "degree": "BSc",
+      "field": "Computer Science",
+      "end_year": 2011
+    }
+  ],
+  "languages": [
+    {
+      "language": "Swedish",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    }
+  ]
+}

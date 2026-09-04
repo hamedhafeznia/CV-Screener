@@ -1,0 +1,100 @@
+{
+  "id": "cv_016",
+  "name": "Bram Visser",
+  "email": "bram.visser@gmail.com",
+  "phone": "+31 6 1234 5678",
+  "location": "Amsterdam, Netherlands",
+  "current_title": "Frontend Engineer",
+  "seniority": "mid",
+  "years_experience": 6,
+  "summary": "Frontend Engineer with 6 years of experience building scalable web applications and resilient design systems in fintech and e-commerce. Specializes in TypeScript, React, and GraphQL to optimize client-side performance and streamline checkout workflows. Proven track record of improving page load metrics and boosting checkout conversion rates across high-throughput platforms.",
+  "skills": [
+    {
+      "name": "TypeScript",
+      "category": "Languages"
+    },
+    {
+      "name": "JavaScript",
+      "category": "Languages"
+    },
+    {
+      "name": "React",
+      "category": "Frameworks"
+    },
+    {
+      "name": "GraphQL",
+      "category": "Data"
+    },
+    {
+      "name": "Design Systems",
+      "category": "Design"
+    },
+    {
+      "name": "Playwright",
+      "category": "Tools"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    },
+    {
+      "name": "Next.js",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Jest",
+      "category": "Tools"
+    },
+    {
+      "name": "Tailwind CSS",
+      "category": "Design"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Mollie",
+      "title": "Frontend Engineer",
+      "start_date": "2022-09",
+      "end_date": "Present",
+      "description": "Architected modern merchant dashboard components using React, TypeScript, and GraphQL, serving over 130,000 active European businesses. Standardized component library usage across 4 product teams, reducing frontend bundle size by 24% and decreasing LCP from 2.8s to 1.4s. Implemented comprehensive end-to-end testing suites with Playwright, raising web test coverage to 88% and cutting release regression incidents by 35%."
+    },
+    {
+      "company": "Adyen",
+      "title": "Frontend Engineer",
+      "start_date": "2020-04",
+      "end_date": "2022-08",
+      "description": "Developed core web checkout flows and payment drop-in components using JavaScript, React, and TypeScript. Optimized client-side render times by 40% across high-volume checkout funnels handling over 1,500 transactions per minute. Collaborated with UX designers to scale internal Design Systems, resulting in a 15% improvement in mobile checkout conversion rate."
+    },
+    {
+      "company": "Picnic",
+      "title": "Frontend Engineer",
+      "start_date": "2018-05",
+      "end_date": "2020-03",
+      "description": "Built key web platform interfaces for order tracking and customer support management utilizing JavaScript and React. Integrated GraphQL endpoints to streamline data fetching, reducing network payload sizes by 30%. Established Git workflow standards and automated web build pipelines, trimming deployment cycles from 45 minutes to 12 minutes."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Delft University of Technology",
+      "degree": "MSc",
+      "field": "Industrial Engineering",
+      "end_year": 2018
+    },
+    {
+      "institution": "Delft University of Technology",
+      "degree": "BSc",
+      "field": "Industrial Engineering",
+      "end_year": 2016
+    }
+  ],
+  "languages": [
+    {
+      "language": "Dutch",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    }
+  ]
+}

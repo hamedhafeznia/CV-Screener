@@ -1,0 +1,100 @@
+{
+  "id": "cv_019",
+  "name": "Núria Serrano",
+  "email": "nuria.serrano@gmail.com",
+  "phone": "+34 612 345 678",
+  "location": "Madrid, Spain",
+  "current_title": "Senior Mobile Engineer",
+  "seniority": "senior",
+  "years_experience": 10,
+  "summary": "Senior Mobile Engineer with 10 years of experience designing and optimizing high-traffic iOS and Android applications. Expert in native and cross-platform frameworks, focused on performance tuning, robust mobile architectures, and automated delivery pipelines. Proven record of scaling mobile products in the mobility, HR, and on-demand delivery sectors.",
+  "skills": [
+    {
+      "name": "Swift",
+      "category": "Languages"
+    },
+    {
+      "name": "Kotlin",
+      "category": "Languages"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    },
+    {
+      "name": "GraphQL",
+      "category": "Data"
+    },
+    {
+      "name": "REST",
+      "category": "Data"
+    },
+    {
+      "name": "CI/CD",
+      "category": "Tools"
+    },
+    {
+      "name": "React Native",
+      "category": "Frameworks"
+    },
+    {
+      "name": "SwiftUI",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Jetpack Compose",
+      "category": "Frameworks"
+    },
+    {
+      "name": "CoreData",
+      "category": "Data"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Cabify",
+      "title": "Senior Mobile Engineer",
+      "start_date": "2021-03",
+      "end_date": "Present",
+      "description": "Led the refactoring of the core passenger booking flow using Swift and Kotlin, reducing application launch time by 28%. Orchestrated the integration of a GraphQL API layer that decreased mobile payload sizes by 40% across a user base of 5M+ active passengers. Collaborated with a team of 12 engineers to optimize CI/CD pipelines, reducing monthly build failures by 15%."
+    },
+    {
+      "company": "Factorial",
+      "title": "Mobile Software Engineer",
+      "start_date": "2018-05",
+      "end_date": "2021-02",
+      "description": "Developed core employee-management features using React Native and REST APIs, supporting the scaling of the platform to 50k daily active users. Built custom native bridges to interface with biometric hardware, improving clock-in accuracy to 99.8%. Standardized Git branching strategies and automated App Store and Google Play deployments, reducing release cycle overhead from 3 days to 4 hours."
+    },
+    {
+      "company": "Glovo",
+      "title": "Mobile Developer",
+      "start_date": "2014-09",
+      "end_date": "2018-04",
+      "description": "Engineered real-time tracking features for courier and customer applications in Swift and Kotlin, reducing location update latency by 150ms. Managed localized application state and offline-first persistence architectures to ensure reliable performance under low-connectivity environments. Contributed to a cross-functional squad of 8, delivering 15 major app updates that boosted checkout conversion rates by 4.2%."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universitat Pompeu Fabra",
+      "degree": "MSc",
+      "field": "Telecommunications Engineering",
+      "end_year": 2014
+    },
+    {
+      "institution": "Universitat Pompeu Fabra",
+      "degree": "BSc",
+      "field": "Audiovisual Systems Engineering",
+      "end_year": 2012
+    }
+  ],
+  "languages": [
+    {
+      "language": "Spanish",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C2"
+    }
+  ]
+}

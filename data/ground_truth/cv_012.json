@@ -1,0 +1,107 @@
+{
+  "id": "cv_012",
+  "name": "Jonas Brandt",
+  "email": "jonas.brandt@outlook.de",
+  "phone": "+49 176 4321 8901",
+  "location": "Berlin, Germany",
+  "current_title": "Senior Frontend Engineer",
+  "seniority": "senior",
+  "years_experience": 10,
+  "summary": "Performance-driven Senior Frontend Engineer with 10 years of experience building high-scale web applications in fast-growth e-commerce and fintech domains. Proven track record of optimizing page load times, scaling web architecture using modern React frameworks, and mentoring cross-functional engineering teams.",
+  "skills": [
+    {
+      "name": "TypeScript",
+      "category": "Languages"
+    },
+    {
+      "name": "React",
+      "category": "Frameworks"
+    },
+    {
+      "name": "JavaScript",
+      "category": "Languages"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    },
+    {
+      "name": "GraphQL",
+      "category": "Data"
+    },
+    {
+      "name": "Next.js",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Jest",
+      "category": "Tools"
+    },
+    {
+      "name": "Cypress",
+      "category": "Tools"
+    },
+    {
+      "name": "Webpack",
+      "category": "Tools"
+    },
+    {
+      "name": "CSS-in-JS",
+      "category": "Design"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Delivery Hero",
+      "title": "Senior Frontend Engineer",
+      "start_date": "2022-03",
+      "end_date": "Present",
+      "description": "Led a team of 4 frontend developers to rebuild the global checkout funnel using Next.js and TypeScript, reducing PageSpeed Index by 35% and increasing order conversion rates by 2.4%. Migrated legacy REST APIs to a unified GraphQL gateway, lowering network overhead for mobile clients by 40%."
+    },
+    {
+      "company": "N26",
+      "title": "Senior Frontend Engineer",
+      "start_date": "2019-09",
+      "end_date": "2022-02",
+      "description": "Maintained and optimized critical web app features using React, TypeScript, and Git. Elevated Lighthouse accessibility and performance scores from 72 to 95, and successfully trimmed bundle sizes by 120KB through targeted Webpack code-splitting."
+    },
+    {
+      "company": "HelloFresh",
+      "title": "Frontend Engineer",
+      "start_date": "2017-01",
+      "end_date": "2019-08",
+      "description": "Developed interactive recipe selection interfaces using React and JavaScript. Collaborated with design teams to integrate a unified component library, accelerating feature shipping times by 20% across 3 distinct cross-functional product teams."
+    },
+    {
+      "company": "SoundCloud",
+      "title": "Frontend Engineer",
+      "start_date": "2014-06",
+      "end_date": "2016-12",
+      "description": "Constructed responsive web features for core audio playback components using JavaScript. Ran comprehensive A/B testing on user playlists, successfully lifting overall listener engagement metrics by 8% over a six-month duration."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universität Potsdam",
+      "degree": "MSc",
+      "field": "Business Analytics",
+      "end_year": 2014
+    },
+    {
+      "institution": "Universität Potsdam",
+      "degree": "BSc",
+      "field": "Business Informatics",
+      "end_year": 2012
+    }
+  ],
+  "languages": [
+    {
+      "language": "German",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    }
+  ]
+}

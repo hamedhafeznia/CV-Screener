@@ -1,0 +1,98 @@
+{
+  "id": "cv_010",
+  "name": "Aino Åberg",
+  "email": "aino.aberg@outlook.com",
+  "phone": "+358 40 123 4567",
+  "location": "Helsinki, Finland",
+  "current_title": "Senior Data Scientist",
+  "seniority": "senior",
+  "years_experience": 6,
+  "summary": "Senior Data Scientist with 6 years of experience designing and deploying machine learning pipelines, predictive models, and real-time data analytics systems. Specialized in optimizing user behavior analysis, conversion metrics, and algorithmic decision-making across logistics, gaming, and fintech sectors. Proven track record of translating high-volume behavioral data into scalable, production-grade solutions.",
+  "skills": [
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "SQL",
+      "category": "Languages"
+    },
+    {
+      "name": "scikit-learn",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Machine Learning",
+      "category": "Methodologies"
+    },
+    {
+      "name": "Snowflake",
+      "category": "Data"
+    },
+    {
+      "name": "Tableau",
+      "category": "Tools"
+    },
+    {
+      "name": "Deep Learning",
+      "category": "Methodologies"
+    },
+    {
+      "name": "PyTorch",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Apache Spark",
+      "category": "Data"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Wolt",
+      "title": "Senior Data Scientist",
+      "start_date": "2022-03",
+      "end_date": "Present",
+      "description": "Owned the development of merchant recommendation algorithms using Python and scikit-learn, improving order conversion rates by 4.2% across European markets. Scaled automated data pipelines on Snowflake to process 50M+ daily telemetry events with sub-second retrieval latency. Collaborated with a cross-functional product team of 12 to deploy deep learning models for courier delivery time estimation, reducing average deviation by 18 seconds."
+    },
+    {
+      "company": "Supercell",
+      "title": "Data Scientist",
+      "start_date": "2020-01",
+      "end_date": "2022-02",
+      "description": "Designed predictive lifetime value (LTV) and churn models using machine learning techniques, decreasing prediction error variance by 22% for active global titles. Maintained and scaled interactive Tableau dashboards monitoring cohort behavior and monetization for over 5M daily active users. Developed automated A/B testing evaluation systems that streamlined experiment configuration and reduced analysis cycle time from 3 days to 4 hours."
+    },
+    {
+      "company": "Klarna",
+      "title": "Data Scientist",
+      "start_date": "2018-01",
+      "end_date": "2019-12",
+      "description": "Developed fraud detection and risk assessment classifiers utilizing Python and complex SQL query structures. Reduced credit decision false positives by 9% while maintaining a 99.8% system uptime during peak commercial shopping events. Engineered clean data schemas and managed custom feature store pipelines to accelerate model training cycles."
+    }
+  ],
+  "education": [
+    {
+      "institution": "KTH Royal Institute of Technology",
+      "degree": "BSc",
+      "field": "Interaction Design",
+      "end_year": 2017
+    }
+  ],
+  "languages": [
+    {
+      "language": "Swedish",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    },
+    {
+      "language": "French",
+      "level": "B1"
+    }
+  ]
+}

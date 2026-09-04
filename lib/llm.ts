@@ -9,7 +9,21 @@ import type { EmbeddingModel, LanguageModel } from 'ai';
  * `embedDocuments`, `embedQuery`. Swapping providers is a change to this file.
  */
 
-export const LLM_MODEL = process.env.LLM_MODEL || 'gemini-3.5-flash';
+/**
+ * `LLM_MODEL` accepts a comma-separated chain, not just one id.
+ *
+ * The free tier's cap is 20 requests per day *per model*, which is not enough to
+ * generate a corpus, ingest it and run an eval — but the buckets are
+ * independent, so an exhausted model can be rolled past rather than waited on.
+ * With billing enabled, set a single id and the rotation never triggers.
+ */
+export const LLM_MODELS = (process.env.LLM_MODEL || 'gemini-3.5-flash')
+  .split(',')
+  .map((id) => id.trim())
+  .filter(Boolean);
+
+/** The model currently in use. Advances only when a daily quota is exhausted. */
+export const LLM_MODEL = LLM_MODELS[0];
 export const EMBED_MODEL = process.env.EMBED_MODEL || 'gemini-embedding-001';
 export const IMAGE_MODEL = process.env.IMAGE_MODEL || 'gemini-3.1-flash-image';
 
@@ -72,35 +86,84 @@ function pace(): Promise<void> {
   return wait;
 }
 
-/** Parse `retryDelay: "37.9s"` out of a 429 body, in ms. */
-async function retryAfterMs(response: Response): Promise<number> {
+interface QuotaError {
+  /** Milliseconds the API asks us to wait. */
+  retryMs: number;
+  /** True when the exhausted bucket resets daily, so waiting is pointless. */
+  daily: boolean;
+}
+
+/** Read the retry delay and quota kind out of a 429 body. */
+async function readQuotaError(response: Response): Promise<QuotaError> {
+  let retryMs = 30_000;
+  let daily = false;
+
   const header = response.headers.get('retry-after');
-  if (header && Number.isFinite(Number(header))) return Number(header) * 1000 + 500;
+  if (header && Number.isFinite(Number(header))) retryMs = Number(header) * 1000 + 500;
+
   try {
     const body = (await response.clone().json()) as {
-      error?: { details?: { '@type'?: string; retryDelay?: string }[] };
+      error?: { details?: { retryDelay?: string; violations?: { quotaId?: string }[] }[] };
     };
     for (const detail of body.error?.details ?? []) {
       const seconds = Number.parseFloat(detail.retryDelay ?? '');
-      if (Number.isFinite(seconds)) return seconds * 1000 + 500;
+      if (Number.isFinite(seconds)) retryMs = seconds * 1000 + 500;
+      for (const violation of detail.violations ?? []) {
+        if (/PerDay/i.test(violation.quotaId ?? '')) daily = true;
+      }
     }
   } catch {
-    // Body was not JSON; fall through to the default.
+    // Body was not JSON; the defaults above stand.
   }
-  return 30_000;
+  return { retryMs, daily };
+}
+
+/** Index into LLM_MODELS. Advances when a model's daily quota is spent. */
+let activeModel = 0;
+
+export function currentModel(): string {
+  return LLM_MODELS[activeModel];
+}
+
+const MODEL_URL = /\/models\/([^:/]+):/;
+
+/** Point a request at whichever model in the chain is still in budget. */
+function retarget(input: RequestInfo | URL): RequestInfo | URL {
+  if (LLM_MODELS.length < 2) return input;
+  const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+  const match = url.match(MODEL_URL);
+  // Only rewrite text-model calls; embeddings and images have their own quotas.
+  if (!match || !LLM_MODELS.includes(match[1]) || match[1] === currentModel()) return input;
+  const rewritten = url.replace(MODEL_URL, `/models/${currentModel()}:`);
+  return typeof input === 'string' || input instanceof URL ? rewritten : new Request(rewritten, input);
 }
 
 const throttledFetch: typeof fetch = async (input, init) => {
   for (let attempt = 0; ; attempt++) {
     await pace();
-    const response = await fetch(input, init);
+    const response = await fetch(retarget(input), init);
     if (response.status !== 429 || attempt >= MAX_429_RETRIES) return response;
 
-    const wait = await retryAfterMs(response);
-    if (minIntervalMs() > 0) {
-      console.warn(`  … rate limited, waiting ${(wait / 1000).toFixed(0)}s (attempt ${attempt + 1}/${MAX_429_RETRIES})`);
+    const { retryMs, daily } = await readQuotaError(response);
+    const isTextCall = MODEL_URL.test(
+      typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url,
+    );
+
+    // A daily bucket will not clear by waiting. If another model in the chain is
+    // still in budget, roll over to it and retry immediately.
+    if (daily && isTextCall && activeModel < LLM_MODELS.length - 1) {
+      activeModel++;
+      console.warn(`  … daily quota spent, switching to ${currentModel()}`);
+      continue;
     }
-    await sleep(wait);
+    if (daily && isTextCall) {
+      return response; // Every model exhausted — surface it rather than hang.
+    }
+
+    if (minIntervalMs() > 0) {
+      console.warn(`  … rate limited, waiting ${(retryMs / 1000).toFixed(0)}s (attempt ${attempt + 1}/${MAX_429_RETRIES})`);
+    }
+    await sleep(retryMs);
   }
 };
 

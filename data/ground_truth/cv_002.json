@@ -1,0 +1,79 @@
+{
+  "id": "cv_002",
+  "name": "Callum Doyle",
+  "email": "callum.doyle@outlook.com",
+  "phone": "+44 7700 900077",
+  "location": "London, United Kingdom",
+  "current_title": "Data Engineer",
+  "seniority": "mid",
+  "years_experience": 4,
+  "summary": "Detail-oriented Data Engineer with 4 years of experience designing and optimizing high-throughput data architectures. Specialized in building scalable real-time streaming pipelines and cloud-native batch processing workflows that reduce latency and cloud infrastructure overhead.",
+  "skills": [
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "SQL",
+      "category": "Languages"
+    },
+    {
+      "name": "Apache Spark",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Airflow",
+      "category": "Tools"
+    },
+    {
+      "name": "Kafka",
+      "category": "Frameworks"
+    },
+    {
+      "name": "GCP",
+      "category": "Cloud"
+    },
+    {
+      "name": "dbt",
+      "category": "Tools"
+    },
+    {
+      "name": "BigQuery",
+      "category": "Data"
+    },
+    {
+      "name": "Terraform",
+      "category": "Tools"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Deliveroo",
+      "title": "Data Engineer",
+      "start_date": "2022-03",
+      "end_date": "Present",
+      "description": "Designed and maintained real-time event streaming pipelines using Kafka and Apache Spark to process customer order metrics, reducing end-to-end processing latency from 15 seconds to under 2 seconds. Orchestrated complex batch workflows via Airflow on GCP, optimizing storage schemas and SQL query execution to decrease annual cloud infrastructure spend by $80,000. Rebuilt core data warehouse schemas using dbt, improving daily data model build reliability to 99.9% SLA."
+    },
+    {
+      "company": "Monzo",
+      "title": "Junior Data Engineer",
+      "start_date": "2020-03",
+      "end_date": "2022-03",
+      "description": "Built and scaled ingestion pipelines using Python and SQL to integrate financial transaction metadata into a secure GCP analytics environment. Implemented monitoring and automated alerting architectures for Airflow DAGs, which reduced pipeline incident response times by 35%. Supported the migration of legacy batch execution jobs to Apache Spark, increasing historical transaction audit throughput by 3x."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Imperial College London",
+      "degree": "MSc",
+      "field": "Telecommunications Engineering",
+      "end_year": 2019
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "level": "Native"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "id": "cv_001",
+  "name": "Priya Byrne",
+  "email": "priya.byrne@outlook.com",
+  "phone": "+44 7700 900077",
+  "location": "London, United Kingdom",
+  "current_title": "Machine Learning Engineer",
+  "seniority": "mid",
+  "years_experience": 4,
+  "summary": "Machine Learning Engineer with 4 years of experience designing, training, and deploying scalable computer vision models. Expert in building low-latency inference pipelines and containerized deep learning systems for automated visual recognition. Proven capability in translating complex neural network architectures into reliable production services.",
+  "skills": [
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "PyTorch",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Machine Learning",
+      "category": "Data"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "TensorFlow",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Computer Vision",
+      "category": "Data"
+    },
+    {
+      "name": "OpenCV",
+      "category": "Frameworks"
+    },
+    {
+      "name": "SQL",
+      "category": "Languages"
+    },
+    {
+      "name": "AWS",
+      "category": "Cloud"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Ocado Technology",
+      "title": "Machine Learning Engineer",
+      "start_date": "2022-09",
+      "end_date": "Present",
+      "description": "Developed PyTorch-based Computer Vision systems for robotic pick-and-place operations, improving item grasp success rates by 18%. Containerized deep learning inference pipelines with Docker, reducing latency from 120ms to 35ms per frame. Automated data annotation workflows using active learning, reducing manual labeling costs by 30% for a team of 15 annotators."
+    },
+    {
+      "company": "Wise",
+      "title": "Machine Learning Engineer",
+      "start_date": "2020-09",
+      "end_date": "2022-09",
+      "description": "Built Machine Learning models in Python and TensorFlow to automate international document verification processes. Engineered real-time OCR and layout analysis systems, scaling throughput to handle 200,000 documents daily with a 94% extraction accuracy. Designed validation pipelines that reduced verification times by 40% while maintaining compliance standards."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Trinity College Dublin",
+      "degree": "MSc",
+      "field": "Interaction Design",
+      "end_year": 2020
+    },
+    {
+      "institution": "Trinity College Dublin",
+      "degree": "BSc",
+      "field": "Computer Science",
+      "end_year": 2019
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "level": "Native"
+    }
+  ]
+}

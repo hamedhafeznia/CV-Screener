@@ -1,0 +1,95 @@
+{
+  "id": "cv_022",
+  "name": "Aino Virtanen",
+  "email": "aino.virtanen@gmail.com",
+  "phone": "+358 45 788 2341",
+  "location": "Helsinki, Finland",
+  "current_title": "Junior Full-Stack Engineer",
+  "seniority": "junior",
+  "years_experience": 3,
+  "summary": "Junior Full-Stack Engineer with 3 years of experience building scalable web applications and microservices using TypeScript, Node.js, and React. Proven track record in optimizing backend database queries and developing responsive user interfaces in fast-paced tech environments. Experienced with cloud infrastructure, containerized deployments, and GraphQL APIs.",
+  "skills": [
+    {
+      "name": "TypeScript",
+      "category": "Languages"
+    },
+    {
+      "name": "Node.js",
+      "category": "Frameworks"
+    },
+    {
+      "name": "React",
+      "category": "Frameworks"
+    },
+    {
+      "name": "PostgreSQL",
+      "category": "Data"
+    },
+    {
+      "name": "Redis",
+      "category": "Data"
+    },
+    {
+      "name": "AWS",
+      "category": "Cloud"
+    },
+    {
+      "name": "GraphQL",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "Jest",
+      "category": "Tools"
+    },
+    {
+      "name": "Tailwind CSS",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Git",
+      "category": "Tools"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Spotify",
+      "title": "Junior Full-Stack Engineer",
+      "start_date": "2022-09",
+      "end_date": "Present",
+      "description": "Developed web features for creator tools using React, TypeScript, and Node.js serving over 4 million daily active users. Migrated legacy REST endpoints to GraphQL, reducing client fetch latency by 35% across internal dashboard modules. Optimized PostgreSQL database queries and introduced Redis caching layers to improve API throughput by 25%."
+    },
+    {
+      "company": "Klarna",
+      "title": "Junior Software Engineer",
+      "start_date": "2021-03",
+      "end_date": "2022-08",
+      "description": "Maintained payment checkout components built with React, Node.js, and Python within an agile team of 8 engineers. Deployed microservices on AWS using Docker, achieving 99.95% service uptime and reducing build pipeline execution time by 20%. Authored automated integration test suites using Jest, raising codebase test coverage from 68% to 85%."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Aalto University",
+      "degree": "BSc",
+      "field": "Computer Science",
+      "end_year": 2021
+    }
+  ],
+  "languages": [
+    {
+      "language": "Swedish",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "id": "cv_026",
+  "name": "Irene Prieto",
+  "email": "irene.prieto@gmail.com",
+  "phone": "+34 612 34 56 78",
+  "location": "Valencia, Spain",
+  "current_title": "Senior Product Designer",
+  "seniority": "senior",
+  "years_experience": 6,
+  "summary": "Senior Product Designer with 6 years of experience driving user-centered design initiatives across high-growth mobility and marketplace platforms. Specializes in building scalable design systems, leading qualitative user research, and creating accessible digital experiences. Proven track record of improving conversion metrics and streamlining complex product workflows through data-informed design.",
+  "skills": [
+    {
+      "name": "Figma",
+      "category": "Tools"
+    },
+    {
+      "name": "Design Systems",
+      "category": "Design"
+    },
+    {
+      "name": "User Research",
+      "category": "Product"
+    },
+    {
+      "name": "Prototyping",
+      "category": "Design"
+    },
+    {
+      "name": "Illustration",
+      "category": "Design"
+    },
+    {
+      "name": "Accessibility",
+      "category": "Design"
+    },
+    {
+      "name": "Usability Testing",
+      "category": "Product"
+    },
+    {
+      "name": "Micro-interactions",
+      "category": "Design"
+    },
+    {
+      "name": "HTML/CSS",
+      "category": "Languages"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Cabify",
+      "title": "Senior Product Designer",
+      "start_date": "2022-03",
+      "end_date": "Present",
+      "description": "Led the end-to-end redesign of the driver onboarding flow across mobile platforms using Figma and a newly established Design System. Conducted User Research sessions with over 40 drivers to identify drop-off points, resulting in an Accessibility overhaul that increased onboarding completion by 18%. Collaborated with an 8-person cross-functional squad to ship multi-modal transit options."
+    },
+    {
+      "company": "Typeform",
+      "title": "Product Designer",
+      "start_date": "2020-01",
+      "end_date": "2022-02",
+      "description": "Spearheaded core interaction Prototyping and custom Illustration guidelines for the form creation experience. Improved form creation completion speed by 24% by designing modular component libraries and interactive state systems in Figma. Directed monthly usability testing cycles with global user cohorts to refine responsive templates."
+    },
+    {
+      "company": "Wallapop",
+      "title": "Product Designer",
+      "start_date": "2018-03",
+      "end_date": "2019-12",
+      "description": "Designed search filter workflows and visual assets for the peer-to-peer marketplace serving over 10 million active monthly users. Developed high-fidelity Prototyping flows that reduced checkout step friction and boosted completed transactions by 14%. Enforced web Accessibility standards across buyer engagement flows alongside a 6-person engineering team."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad Autónoma de Madrid",
+      "degree": "BSc",
+      "field": "Information Systems",
+      "end_year": 2018
+    }
+  ],
+  "languages": [
+    {
+      "language": "Spanish",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "C2"
+    }
+  ]
+}

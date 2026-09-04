@@ -1,0 +1,100 @@
+{
+  "id": "cv_020",
+  "name": "Hannah Whelan",
+  "email": "hannah.whelan@example.com",
+  "phone": "+44 20 7946 0192",
+  "location": "London, United Kingdom",
+  "current_title": "Machine Learning Engineer",
+  "seniority": "mid",
+  "years_experience": 6,
+  "summary": "Machine Learning Engineer with 6 years of experience building and deploying production AI systems in high-throughput fintech and automation environments. Specialized in natural language processing, computer vision, and scalable cloud deployment pipelines. Track record of optimizing model latency and reducing false-positive rates across critical operational workloads.",
+  "skills": [
+    {
+      "name": "Python",
+      "category": "Languages"
+    },
+    {
+      "name": "PyTorch",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Machine Learning",
+      "category": "Data"
+    },
+    {
+      "name": "Docker",
+      "category": "Tools"
+    },
+    {
+      "name": "NLP",
+      "category": "Data"
+    },
+    {
+      "name": "TensorFlow",
+      "category": "Frameworks"
+    },
+    {
+      "name": "Computer Vision",
+      "category": "Data"
+    },
+    {
+      "name": "GCP",
+      "category": "Cloud"
+    },
+    {
+      "name": "SQL",
+      "category": "Languages"
+    },
+    {
+      "name": "Kubernetes",
+      "category": "Tools"
+    },
+    {
+      "name": "MLflow",
+      "category": "Tools"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Revolut",
+      "title": "Machine Learning Engineer",
+      "start_date": "2022-03",
+      "end_date": "Present",
+      "description": "Architected real-time fraud monitoring systems using PyTorch and GCP Vertex AI, servicing 14 million daily transactions. Reduced false positive alerts by 19% and maintained inference latency under 40 milliseconds. Standardized containerized model deployments using Docker across a cross-functional team of 8 engineers."
+    },
+    {
+      "company": "Monzo",
+      "title": "Machine Learning Engineer",
+      "start_date": "2020-04",
+      "end_date": "2022-02",
+      "description": "Engineered automated customer support classification models applying NLP techniques and TensorFlow to route 600,000 monthly user inquiries. Achieved a 22% increase in immediate resolution rate and decreased average customer response time by 3 minutes. Built automated retraining and evaluation pipelines using MLflow on cloud infrastructure."
+    },
+    {
+      "company": "Ocado Technology",
+      "title": "Junior Machine Learning Engineer",
+      "start_date": "2018-05",
+      "end_date": "2020-03",
+      "description": "Developed Computer Vision pipelines in Python for quality verification in automated fulfillment facilities. Improved item damage detection accuracy from 91% to 97% while processing 30 image frames per second on edge computing nodes. Containerized deployment scripts using Docker to simplify fleet-wide deployment."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Trinity College Dublin",
+      "degree": "MSc",
+      "field": "Software Engineering",
+      "end_year": 2018
+    },
+    {
+      "institution": "Trinity College Dublin",
+      "degree": "BSc",
+      "field": "Computer Science",
+      "end_year": 2017
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "level": "Native"
+    }
+  ]
+}
