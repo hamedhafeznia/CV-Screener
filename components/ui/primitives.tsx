@@ -162,9 +162,12 @@ export function DialogContent({
       <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/45 backdrop-blur-[2px]" />
       <DialogPrimitive.Content
         className={cn(
-          'fixed left-1/2 top-1/2 z-50 flex max-h-[92vh] w-[min(920px,94vw)] -translate-x-1/2 -translate-y-1/2',
-          'flex-col overflow-hidden rounded-[var(--radius-lg)] bg-bg shadow-[0_24px_80px_-12px_rgba(0,0,0,0.9)]',
-          'outline outline-1 -outline-offset-1 outline-border',
+          // Full-bleed on a phone — a PDF in a 94vw box with rounded corners
+          // wastes the only screen space that matters.
+          'fixed inset-0 z-50 flex flex-col overflow-hidden bg-bg',
+          'sm:inset-auto sm:left-1/2 sm:top-1/2 sm:max-h-[92vh] sm:w-[min(920px,94vw)]',
+          'sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[var(--radius-lg)]',
+          'sm:shadow-[0_24px_80px_-12px_rgba(0,0,0,0.9)] sm:outline sm:outline-1 sm:-outline-offset-1 sm:outline-border',
           className,
         )}
       >

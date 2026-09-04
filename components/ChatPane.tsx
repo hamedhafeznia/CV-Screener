@@ -113,7 +113,7 @@ export function ChatPane({
         {messages.length === 0 ? (
           <EmptyState total={candidateCount} chunks={chunks} onPick={submit} />
         ) : (
-          <div className="mx-auto max-w-3xl space-y-8 px-8 py-8">
+          <div className="mx-auto max-w-3xl space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 md:px-8 md:py-8">
             {messages.map((message) => (
               <div key={message.id} className="rise">
                 <Message
@@ -141,7 +141,7 @@ export function ChatPane({
         )}
       </div>
 
-      <div className="px-8 pb-6">
+      <div className="px-3 pb-4 sm:px-6 sm:pb-5 md:px-8 md:pb-6">
         <form
           onSubmit={(event) => {
             event.preventDefault();

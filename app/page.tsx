@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import type { UIMessage } from 'ai';
-import { LayoutGrid } from 'lucide-react';
+import { LayoutGrid, PanelLeft, X } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { ChatPane } from '@/components/ChatPane';
 import { cn } from '@/lib/utils';
@@ -24,14 +24,19 @@ interface Meta {
 }
 
 /**
- * The shell: one inset frame, a breadcrumb bar, the tabbed sidebar, and the
- * active conversation. One screen, no navigation.
+ * The shell: one inset frame, a breadcrumb bar, the sidebar, and the active
+ * conversation.
+ *
+ * The sidebar is a static column from `md` up and a slide-over drawer below it.
+ * At 375px a fixed 272px column would leave about a hundred pixels of chat,
+ * which is not a narrower version of the layout so much as a broken one.
  */
 export default function Page() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [meta, setMeta] = useState<Meta>();
   const [rosterError, setRosterError] = useState<string>();
   const [mode, setMode] = useState<ChatMode>('agentic');
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const sessions = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const chatsError = useSyncExternalStore(subscribe, getError, () => null);
@@ -47,6 +52,16 @@ export default function Page() {
       })
       .catch((cause: Error) => setRosterError(cause.message));
   }, []);
+
+  // Escape closes the drawer, matching every other overlay on the page.
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setDrawerOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [drawerOpen]);
 
   // Falling back to the first session means the initial render needs no state:
   // on the server `sessions` is empty, and after hydration it is the draft.
@@ -64,6 +79,7 @@ export default function Page() {
 
   const handleNewChat = useCallback(() => setSelectedId(startDraft()), []);
   const handleDeleteSession = useCallback((id: string) => setSelectedId(removeSession(id)), []);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
   // Saved chats only; an untouched draft has no history worth listing.
   const savedSessions = useMemo(
@@ -72,19 +88,33 @@ export default function Page() {
   );
 
   return (
-    <div className="h-dvh bg-page p-2.5">
-      <div className="flex h-full flex-col overflow-hidden rounded-[14px] bg-bg">
-        {/* Breadcrumb bar. The mode toggle lives here because the eval measures
-            it — a reviewer can switch and watch the same question lose recall. */}
-        <header className="flex h-12 shrink-0 items-center gap-2.5 border-b border-border px-4">
-          <LayoutGrid className="size-4 shrink-0 text-muted" />
-          <span className="text-sm text-text">cv-screener</span>
-          <span className="text-sm text-faint">/</span>
-          <span className="text-sm text-muted">{candidates.length || '—'} CVs</span>
-          <span className="text-sm text-faint">/</span>
-          <span className="truncate text-sm text-muted">{active?.title ?? 'New chat'}</span>
+    <div className="h-dvh bg-page p-0 sm:p-2.5">
+      <div className="flex h-full flex-col overflow-hidden bg-bg sm:rounded-[14px]">
+        <header className="flex h-12 shrink-0 items-center gap-2.5 border-b border-border px-3 sm:px-4">
+          <button
+            type="button"
+            onClick={() => setDrawerOpen((open) => !open)}
+            aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={drawerOpen}
+            className="-ml-1 flex size-8 items-center justify-center rounded-[var(--radius)] text-muted transition-colors hover:bg-surface hover:text-text md:hidden"
+          >
+            {drawerOpen ? <X className="size-4" /> : <PanelLeft className="size-4" />}
+          </button>
 
-          <div className="ml-auto flex items-center rounded-full bg-surface p-0.5">
+          <LayoutGrid className="hidden size-4 shrink-0 text-muted md:block" />
+          <span className="shrink-0 text-sm text-text">cv-screener</span>
+
+          {/* Breadcrumb detail is the first thing to go when width is scarce. */}
+          <span className="hidden text-sm text-faint sm:inline">/</span>
+          <span className="hidden shrink-0 text-sm text-muted sm:inline">
+            {candidates.length || '—'} CVs
+          </span>
+          <span className="hidden text-sm text-faint lg:inline">/</span>
+          <span className="hidden truncate text-sm text-muted lg:inline">
+            {active?.title ?? 'New chat'}
+          </span>
+
+          <div className="ml-auto flex shrink-0 items-center rounded-full bg-surface p-0.5">
             {(['agentic', 'classic'] as const).map((value) => (
               <button
                 key={value}
@@ -92,7 +122,7 @@ export default function Page() {
                 onClick={() => setMode(value)}
                 aria-pressed={mode === value}
                 className={cn(
-                  'rounded-full px-2.5 py-1 text-xs transition-colors',
+                  'rounded-full px-2 py-1 text-xs transition-colors sm:px-2.5',
                   mode === value ? 'bg-surface-2 text-text' : 'text-faint hover:text-muted',
                 )}
               >
@@ -102,17 +132,35 @@ export default function Page() {
           </div>
         </header>
 
-        <div className="flex min-h-0 flex-1">
-          <Sidebar
-            candidates={candidates}
-            rosterError={rosterError}
-            sessions={savedSessions}
-            chatsError={chatsError}
-            activeSessionId={active?.id ?? null}
-            onSelectSession={setSelectedId}
-            onNewChat={handleNewChat}
-            onDeleteSession={handleDeleteSession}
-          />
+        <div className="relative flex min-h-0 flex-1">
+          {/* Backdrop, drawer only. */}
+          {drawerOpen ? (
+            <button
+              type="button"
+              aria-label="Close menu"
+              onClick={closeDrawer}
+              className="absolute inset-0 z-30 bg-black/50 md:hidden"
+            />
+          ) : null}
+
+          <div
+            className={cn(
+              'absolute inset-y-0 left-0 z-40 transition-transform duration-200 ease-out md:static md:z-auto md:translate-x-0',
+              drawerOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full',
+            )}
+          >
+            <Sidebar
+              candidates={candidates}
+              rosterError={rosterError}
+              sessions={savedSessions}
+              chatsError={chatsError}
+              activeSessionId={active?.id ?? null}
+              onSelectSession={setSelectedId}
+              onNewChat={handleNewChat}
+              onDeleteSession={handleDeleteSession}
+              onNavigate={closeDrawer}
+            />
+          </div>
 
           {active ? (
             <ChatPane

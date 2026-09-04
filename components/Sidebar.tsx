@@ -27,6 +27,7 @@ export function Sidebar({
   onSelectSession,
   onNewChat,
   onDeleteSession,
+  onNavigate,
 }: {
   candidates: Candidate[];
   rosterError?: string;
@@ -36,6 +37,8 @@ export function Sidebar({
   onSelectSession: (id: string) => void;
   onNewChat: () => void;
   onDeleteSession: (id: string) => void;
+  /** Called after any navigation, so the mobile drawer can close itself. */
+  onNavigate?: () => void;
 }) {
   const [tab, setTab] = useState<SidebarTab>('resumes');
   const [query, setQuery] = useState('');
@@ -53,7 +56,7 @@ export function Sidebar({
   }, [candidates, query]);
 
   return (
-    <aside className="flex w-[272px] shrink-0 flex-col border-r border-border">
+    <aside className="flex h-full w-[272px] shrink-0 flex-col border-r border-border bg-bg">
       <div className="flex items-center gap-1 px-3 pb-1 pt-3">
         {(
           [
@@ -81,7 +84,10 @@ export function Sidebar({
           ) : (
             <button
               type="button"
-              onClick={onNewChat}
+              onClick={() => {
+                onNewChat();
+                onNavigate?.();
+              }}
               aria-label="New chat"
               title="New chat"
               className="flex size-6 items-center justify-center rounded-[var(--radius)] text-faint transition-colors hover:bg-surface hover:text-text"
@@ -100,14 +106,20 @@ export function Sidebar({
           onQuery={setQuery}
           error={rosterError}
           openCv={openCv}
-          onOpenCv={setOpenCv}
+          onOpenCv={(candidate) => {
+            setOpenCv(candidate);
+            if (candidate) onNavigate?.();
+          }}
         />
       ) : (
         <ChatsPane
           sessions={sessions}
           error={chatsError}
           activeId={activeSessionId}
-          onSelect={onSelectSession}
+          onSelect={(id) => {
+            onSelectSession(id);
+            onNavigate?.();
+          }}
           onDelete={onDeleteSession}
         />
       )}
