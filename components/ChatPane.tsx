@@ -9,6 +9,7 @@ import { Message } from '@/components/Message';
 import { Thinking } from '@/components/Thinking';
 import { EmptyState } from '@/components/EmptyState';
 import type { ChatMode } from '@/lib/schemas';
+import { COPY } from '@/lib/copy';
 
 /**
  * One conversation.
@@ -128,7 +129,9 @@ export function ChatPane({
                 message yet, so the pending state is rendered here — anchored
                 where the answer itself will appear, not as a detached line. */}
             {busy && messages.at(-1)?.role === 'user' ? (
-              <Thinking phase={{ label: `Asking ${model ?? 'the model'}`, source: 'model' }} />
+              <Thinking
+                phase={{ label: COPY.thinking.asking(model ?? COPY.thinking.unknownModel), source: 'model' }}
+              />
             ) : null}
             {error ? (
               <p className="flex items-start gap-2 rounded-[var(--radius)] bg-surface px-3.5 py-2.5 text-sm text-danger">
@@ -159,22 +162,22 @@ export function ChatPane({
               }
             }}
             rows={1}
-            placeholder="Ask about skills, universities, languages, or one candidate…"
+            placeholder={COPY.chat.inputPlaceholder}
             className="max-h-44 min-h-6"
-            aria-label="Ask a question about the CVs"
+            aria-label={COPY.chat.inputLabel}
           />
           <div className="mt-3 flex items-end justify-between gap-3">
             <span className="truncate text-xs text-faint">
-              {model ?? '—'}
+              {COPY.chat.meta(model, chunks).model}
               <span className="mx-2 text-surface-2">·</span>
-              {chunks ?? '—'} chunks
+              {COPY.chat.meta(model, chunks).chunks}
             </span>
             {busy ? (
-              <Button type="button" size="icon" variant="outline" onClick={stop} aria-label="Stop">
+              <Button type="button" size="icon" variant="outline" onClick={stop} aria-label={COPY.chat.stop}>
                 <Square className="size-3" />
               </Button>
             ) : (
-              <Button type="submit" size="icon" disabled={!input.trim()} aria-label="Send">
+              <Button type="submit" size="icon" disabled={!input.trim()} aria-label={COPY.chat.send}>
                 <ArrowUp className="size-4" />
               </Button>
             )}

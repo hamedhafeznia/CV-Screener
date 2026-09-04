@@ -5,6 +5,7 @@ import { FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PdfDialog } from '@/components/PdfDialog';
 import type { Citation } from '@/components/types';
+import { COPY } from '@/lib/copy';
 
 /**
  * Secondary tier (PRD §8.3): a row of compact chips under the answer, one per
@@ -22,7 +23,7 @@ export function SourceChip({ citation }: { citation: Citation }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        title={`${citation.name} — ${citation.current_title || 'CV'}, page ${citation.page}`}
+        title={COPY.sources.chipTitle(citation.name, citation.current_title, citation.page)}
         className={cn(
           'group inline-flex max-w-full items-center gap-2 rounded-[var(--radius)] bg-surface px-2.5 py-1.5',
           'transition-colors hover:bg-surface-2 focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-faint',
@@ -33,7 +34,9 @@ export function SourceChip({ citation }: { citation: Citation }) {
           {citation.candidate_id}
         </span>
         <span className="truncate text-xs text-faint">{citation.name}</span>
-        {citation.page > 1 ? <span className="shrink-0 font-mono text-xs text-faint">p.{citation.page}</span> : null}
+        {citation.page > 1 ? (
+          <span className="shrink-0 font-mono text-xs text-faint">{COPY.sources.page(citation.page)}</span>
+        ) : null}
       </button>
 
       <PdfDialog
@@ -66,7 +69,7 @@ export function SourceGrid({ citations }: { citations: Citation[] }) {
           onClick={() => setShowAll(true)}
           className="rounded-[var(--radius)] px-2.5 py-1.5 text-xs text-faint transition-colors hover:text-muted"
         >
-          +{hidden} more
+          {COPY.sources.more(hidden)}
         </button>
       ) : null}
     </div>

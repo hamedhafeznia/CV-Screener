@@ -6,6 +6,7 @@ import * as AvatarPrimitive from '@radix-ui/react-avatar';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { COPY } from '@/lib/copy';
 
 /**
  * The seven primitives from PRD §8.4, kept in one file.
@@ -183,7 +184,7 @@ export function DialogContent({
             )}
           </div>
           <DialogPrimitive.Close asChild>
-            <Button variant="ghost" size="icon" aria-label="Close">
+            <Button variant="ghost" size="icon" aria-label={COPY.pdf.close}>
               <X className="size-4" />
             </Button>
           </DialogPrimitive.Close>

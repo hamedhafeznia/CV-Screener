@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/primitives';
+import { COPY } from '@/lib/copy';
 
 /**
  * The citation viewer (PRD §8.4.6). Opens the real PDF at the cited page — the
@@ -54,21 +55,21 @@ function PdfFrame({ candidateId, name, page }: { candidateId: string; name: stri
         ) : null}
         <iframe
           src={`/api/cv/${candidateId}#page=${page}`}
-          title={`${name} CV, page ${page}`}
+          title={COPY.pdf.frameTitle(name, page)}
           onLoad={() => setLoaded(true)}
           className="relative size-full"
         />
       </div>
 
       <div className="flex items-center justify-between px-4 py-2 text-xs text-faint">
-        <span>{loaded ? `Cited from page ${page}` : 'Loading the CV…'}</span>
+        <span>{loaded ? COPY.pdf.cited(page) : COPY.pdf.loading}</span>
         <a
           href={`/api/cv/${candidateId}`}
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-1 text-muted transition-colors hover:text-text"
         >
-          Open in new tab <ExternalLink className="size-3" />
+          {COPY.pdf.openInNewTab} <ExternalLink className="size-3" />
         </a>
       </div>
     </>
@@ -90,7 +91,7 @@ export function PdfDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent title={name} description={`${candidateId}.pdf · page ${page}`} className="h-[92vh]">
+      <DialogContent title={name} description={COPY.pdf.subtitle(candidateId, page)} className="h-[92vh]">
         <PdfFrame key={`${candidateId}:${page}`} candidateId={candidateId} name={name} page={page} />
       </DialogContent>
     </Dialog>

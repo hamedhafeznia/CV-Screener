@@ -17,6 +17,7 @@ import {
 } from '@/lib/chat-store';
 import type { Candidate } from '@/components/types';
 import type { ChatMode } from '@/lib/schemas';
+import { COPY } from '@/lib/copy';
 
 interface Meta {
   model: string;
@@ -46,7 +47,7 @@ export default function Page() {
     fetch('/api/candidates')
       .then(async (response) => {
         const body = await response.json();
-        if (!response.ok) throw new Error(body.error ?? 'Failed to load the roster.');
+        if (!response.ok) throw new Error(body.error ?? COPY.errors.rosterFailed);
         setCandidates(body.candidates ?? []);
         if (body.meta) setMeta(body.meta);
       })
@@ -94,7 +95,7 @@ export default function Page() {
           <button
             type="button"
             onClick={() => setDrawerOpen((open) => !open)}
-            aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+            aria-label={drawerOpen ? COPY.header.closeMenu : COPY.header.openMenu}
             aria-expanded={drawerOpen}
             className="-ml-1 flex size-8 items-center justify-center rounded-[var(--radius)] text-muted transition-colors hover:bg-surface hover:text-text md:hidden"
           >
@@ -102,16 +103,16 @@ export default function Page() {
           </button>
 
           <LayoutGrid className="hidden size-4 shrink-0 text-muted md:block" />
-          <span className="shrink-0 text-sm text-text">cv-screener</span>
+          <span className="shrink-0 text-sm text-text">{COPY.app.name}</span>
 
           {/* Breadcrumb detail is the first thing to go when width is scarce. */}
           <span className="hidden text-sm text-faint sm:inline">/</span>
           <span className="hidden shrink-0 text-sm text-muted sm:inline">
-            {candidates.length || '—'} CVs
+            {COPY.header.corpus(candidates.length)}
           </span>
           <span className="hidden text-sm text-faint lg:inline">/</span>
           <span className="hidden truncate text-sm text-muted lg:inline">
-            {active?.title ?? 'New chat'}
+            {active?.title ?? COPY.sidebar.newChat}
           </span>
 
           <div className="ml-auto flex shrink-0 items-center rounded-full bg-surface p-0.5">
@@ -126,7 +127,7 @@ export default function Page() {
                   mode === value ? 'bg-surface-2 text-text' : 'text-faint hover:text-muted',
                 )}
               >
-                {value}
+                {COPY.header.modes[value]}
               </button>
             ))}
           </div>
@@ -137,7 +138,7 @@ export default function Page() {
           {drawerOpen ? (
             <button
               type="button"
-              aria-label="Close menu"
+              aria-label={COPY.header.closeMenu}
               onClick={closeDrawer}
               className="absolute inset-0 z-30 bg-black/50 md:hidden"
             />

@@ -7,6 +7,7 @@ import { SourceGrid, SourceSkeleton } from '@/components/SourceCard';
 import { PdfDialog } from '@/components/PdfDialog';
 import { Thinking, derivePhase } from '@/components/Thinking';
 import { citationsFromOutput, toolNameOf, type Citation, type ToolPart } from '@/components/types';
+import { COPY } from '@/lib/copy';
 
 /**
  * PRD §8.4.1 — the user's turn is a right-aligned pill; the answer is full-width
@@ -43,7 +44,7 @@ function withInlineIds(text: string, known: Map<string, Citation>, onOpen: OpenC
         key={i}
         type="button"
         onClick={() => onOpen(piece)}
-        title={`Open ${citation.name}'s CV${citation.page > 1 ? `, page ${citation.page}` : ''}`}
+        title={COPY.sources.openCv(citation.name, citation.page)}
         className="rounded-[3px] font-mono text-[0.85em] text-muted underline decoration-dotted decoration-from-font underline-offset-[3px] transition-colors hover:bg-surface hover:text-text focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-faint"
       >
         {piece}

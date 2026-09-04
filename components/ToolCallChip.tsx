@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ChevronRight, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { COPY } from '@/lib/copy';
 import { summarizeInput, summarizeOutput, type ToolPart } from '@/components/types';
 
 /**
@@ -33,7 +34,7 @@ function ToolRow({ toolName, part }: { toolName: string; part: ToolPart }) {
   const pending = part.state === 'input-streaming' || part.state === 'input-available';
   const failed = part.state === 'output-error';
   const args = summarizeInput(part.input);
-  const result = failed ? (part.errorText ?? 'failed') : summarizeOutput(toolName, part.output);
+  const result = failed ? (part.errorText ?? COPY.trace.failed) : summarizeOutput(toolName, part.output);
 
   return (
     <div>
@@ -90,12 +91,10 @@ export function ToolTrace({
         className="flex w-full items-center gap-3 px-3.5 py-2.5 text-left text-xs text-faint transition-colors hover:text-muted"
       >
         {running ? <Loader2 className="size-3 shrink-0 animate-spin" /> : null}
-        <span className={cn('tabular-nums', running && 'shimmer')}>
-          {tools.length} tool{tools.length === 1 ? '' : 's'}
-        </span>
+        <span className={cn('tabular-nums', running && 'shimmer')}>{COPY.trace.tools(tools.length)}</span>
         <span className="text-surface-2">|</span>
         <span className="flex items-center gap-2 tabular-nums">
-          {done}/{tools.length}
+          {COPY.trace.progress(done, tools.length)}
           <StepDots done={done} total={tools.length} />
         </span>
         {/* Elapsed is in-memory only, so a chat restored from storage has none.
@@ -104,7 +103,7 @@ export function ToolTrace({
           <>
             <span className="text-surface-2">|</span>
             <span className="tabular-nums">
-              {streaming ? `${steps} step${steps === 1 ? '' : 's'}` : `${seconds!.toFixed(1)}s`}
+              {streaming ? COPY.trace.steps(steps) : COPY.trace.seconds(seconds!)}
             </span>
           </>
         ) : null}

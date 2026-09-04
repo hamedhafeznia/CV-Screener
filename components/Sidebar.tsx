@@ -7,6 +7,7 @@ import { Avatar, ScrollArea } from '@/components/ui/primitives';
 import { PdfDialog } from '@/components/PdfDialog';
 import { relativeTime, type ChatSession } from '@/lib/chat-store';
 import type { Candidate } from '@/components/types';
+import { COPY } from '@/lib/copy';
 
 export type SidebarTab = 'resumes' | 'chats';
 
@@ -60,8 +61,8 @@ export function Sidebar({
       <div className="flex items-center gap-1 px-3 pb-1 pt-3">
         {(
           [
-            ['resumes', 'Resumes'],
-            ['chats', 'Chats'],
+            ['resumes', COPY.sidebar.tabs.resumes],
+            ['chats', COPY.sidebar.tabs.chats],
           ] as const
         ).map(([value, label]) => (
           <button
@@ -88,8 +89,8 @@ export function Sidebar({
                 onNewChat();
                 onNavigate?.();
               }}
-              aria-label="New chat"
-              title="New chat"
+              aria-label={COPY.sidebar.newChat}
+              title={COPY.sidebar.newChat}
               className="flex size-6 items-center justify-center rounded-[var(--radius)] text-faint transition-colors hover:bg-surface hover:text-text"
             >
               <Plus className="size-3.5" />
@@ -154,8 +155,8 @@ function ResumesPane({
           <input
             value={query}
             onChange={(event) => onQuery(event.target.value)}
-            placeholder="Filter"
-            aria-label="Filter candidates"
+            placeholder={COPY.sidebar.filterPlaceholder}
+            aria-label={COPY.sidebar.filterLabel}
             className="w-full bg-transparent text-sm text-text outline-none"
           />
         </div>
@@ -166,7 +167,7 @@ function ResumesPane({
           <p className="px-5 py-3 text-sm leading-relaxed text-faint">{error}</p>
         ) : candidates.length === 0 ? (
           <p className="px-5 py-3 text-sm text-faint">
-            {total === 0 ? 'No index built yet.' : `Nothing matches “${query}”.`}
+            {total === 0 ? COPY.sidebar.noIndex : COPY.sidebar.noMatch(query)}
           </p>
         ) : (
           <ul className="px-2 pb-4">
@@ -189,7 +190,7 @@ function ResumesPane({
                     </span>
                   </span>
                   <span className="shrink-0 font-mono text-[11px] text-faint tabular-nums">
-                    {candidate.years_experience}y
+                    {COPY.sidebar.years(candidate.years_experience)}
                   </span>
                 </button>
               </li>
@@ -230,7 +231,7 @@ function ChatsPane({
     return (
       <ScrollArea className="flex-1">
         <p className="px-5 py-3 text-sm leading-relaxed text-danger">
-          Chat history unavailable: {error}
+          {COPY.sidebar.historyUnavailable(error)}
         </p>
       </ScrollArea>
     );
@@ -240,7 +241,7 @@ function ChatsPane({
     return (
       <ScrollArea className="flex-1">
         <p className="px-5 py-3 text-sm leading-relaxed text-faint">
-          No saved chats yet. Ask a question and it will appear here.
+          {COPY.sidebar.noChats}
         </p>
       </ScrollArea>
     );
@@ -277,7 +278,7 @@ function ChatsPane({
               <button
                 type="button"
                 onClick={() => onDelete(session.id)}
-                aria-label={`Delete chat: ${session.title}`}
+                aria-label={COPY.sidebar.deleteChat(session.title)}
                 className="invisible absolute right-1.5 flex size-6 items-center justify-center rounded-[var(--radius)] text-faint transition-colors hover:bg-surface-2 hover:text-text group-hover:visible"
               >
                 <X className="size-3.5" />

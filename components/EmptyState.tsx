@@ -1,24 +1,15 @@
 'use client';
 
-import { Filter, FileText, Search } from 'lucide-react';
+import { COPY } from '@/lib/copy';
 
 /**
- * PRD §8.4.5 and §8.4.7. The suggestions are seeded with the questions from the
- * brief, so the first thing anyone does with the app is the exact thing it was
- * built to do — and each is labelled with the retrieval shape it exercises,
- * which is the point being demonstrated.
+ * PRD §8.4.5 and §8.4.7 — the empty state and its suggested questions. The copy,
+ * including which questions are seeded, lives in `lib/copy.ts`.
  */
-export const SUGGESTED_QUESTIONS: { question: string; shape: string; icon: typeof Search }[] = [
-  { question: 'Who has experience with Python?', shape: 'aggregation over the corpus', icon: Filter },
-  { question: 'Which candidate graduated from UPC?', shape: 'exact match on an acronym', icon: Filter },
-  { question: 'Summarize the profile of Xavier Prieto.', shape: 'whole-document fetch', icon: FileText },
-  { question: 'Who has scaled a platform team with Kubernetes?', shape: 'semantic search', icon: Search },
-];
-
 export function SuggestedQuestions({ onPick }: { onPick: (question: string) => void }) {
   return (
     <div className="grid gap-1.5 sm:grid-cols-2">
-      {SUGGESTED_QUESTIONS.map(({ question, shape, icon: Icon }) => (
+      {COPY.empty.suggestions.map(({ question, shape, icon: Icon }) => (
         <button
           key={question}
           type="button"
@@ -48,14 +39,10 @@ export function EmptyState({
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 md:py-20">
       <p className="font-mono text-xs text-faint">
-        {total > 0 ? `${total} CVs · ${chunks ?? '—'} chunks · SQLite + LanceDB` : 'index not built'}
+        {total > 0 ? COPY.empty.indexed(total, chunks) : COPY.empty.notBuilt}
       </p>
-      <h2 className="mt-3 text-lg text-text">Ask about the candidates.</h2>
-      <p className="mb-6 mt-2 text-sm leading-relaxed text-muted">
-        Answers come only from the indexed CVs. The model picks its own retriever for each question — an
-        exact SQL filter, semantic search, or a whole-document fetch — and every answer cites the PDF and
-        page it came from.
-      </p>
+      <h2 className="mt-3 text-lg text-text">{COPY.empty.heading}</h2>
+      <p className="mb-6 mt-2 text-sm leading-relaxed text-muted">{COPY.empty.body}</p>
       <SuggestedQuestions onPick={onPick} />
     </div>
   );

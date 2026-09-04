@@ -1,3 +1,5 @@
+import { COPY } from '@/lib/copy';
+
 /** Shapes the chat UI reads out of streamed tool parts. */
 
 export interface Candidate {
@@ -28,12 +30,6 @@ export interface ToolPart {
   errorText?: string;
 }
 
-export const TOOL_LABELS: Record<string, string> = {
-  search_cvs: 'search_cvs',
-  filter_candidates: 'filter_candidates',
-  get_cv: 'get_cv',
-};
-
 export function toolNameOf(part: { type: string }): string | null {
   return part.type.startsWith('tool-') ? part.type.slice('tool-'.length) : null;
 }
@@ -54,15 +50,15 @@ export function summarizeOutput(toolName: string, output: unknown): string {
   if ('error' in record) return String(record.error);
   if (toolName === 'filter_candidates') {
     const total = Number(record.total ?? 0);
-    return `${total} ${total === 1 ? 'match' : 'matches'}`;
+    return COPY.trace.matches(total);
   }
   if (toolName === 'search_cvs') {
     const total = Number(record.total ?? 0);
-    return `${total} ${total === 1 ? 'passage' : 'passages'}`;
+    return COPY.trace.passages(total);
   }
   if (toolName === 'get_cv') {
     const candidate = record.candidate as { name?: string } | undefined;
-    return candidate?.name ? `full CV · ${candidate.name}` : 'full CV';
+    return COPY.trace.fullCv(candidate?.name);
   }
   return '';
 }
