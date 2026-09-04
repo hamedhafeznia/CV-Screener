@@ -3,6 +3,9 @@ import { config } from 'dotenv';
 
 config();
 
+// The eval fires dozens of multi-step calls; pace them under the free-tier cap.
+process.env.LLM_MIN_INTERVAL_MS ||= '3300';
+
 export default defineConfig({
   test: {
     include: ['eval/**/*.test.ts'],

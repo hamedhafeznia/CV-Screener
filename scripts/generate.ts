@@ -21,6 +21,10 @@ import { textModel } from '../lib/llm';
 import { sampleSpecs, type CVSpec } from './lib/sampler';
 import { avatarSvg, renderCV } from './templates';
 
+// Free tier is 20 requests/minute. Pace batch runs just under it so they proceed
+// steadily instead of sprinting into a 429 and waiting it out (lib/llm.ts).
+process.env.LLM_MIN_INTERVAL_MS ||= '3300';
+
 const ROOT = process.cwd();
 const DIRS = {
   cvs: path.join(ROOT, 'data/cvs'),

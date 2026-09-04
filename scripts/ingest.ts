@@ -24,6 +24,10 @@ import { chunkProfile } from '../lib/ingest/chunk';
 import { buildIndex, type IndexInput } from '../lib/ingest/index';
 import { CVProfileSchema } from '../lib/schemas';
 
+// Free tier is 20 requests/minute. Pace batch runs just under it so they proceed
+// steadily instead of sprinting into a 429 and waiting it out (lib/llm.ts).
+process.env.LLM_MIN_INTERVAL_MS ||= '3300';
+
 const ROOT = process.cwd();
 const CV_DIR = path.join(ROOT, 'data/cvs');
 const PHOTO_DIR = path.join(ROOT, 'data/photos');

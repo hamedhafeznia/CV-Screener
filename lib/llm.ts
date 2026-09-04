@@ -34,11 +34,81 @@ export function requireApiKey(): string {
   return key;
 }
 
+/* --------------------------------------------------------- rate limiting --- */
+
+/**
+ * The free tier allows 20 requests per minute, and a batch run blows through
+ * that in seconds. The AI SDK's own retry uses blind exponential backoff, which
+ * tops out around 30 seconds — just short of the ~38 seconds Google actually
+ * asks for, so a generation run dies two-thirds of the way through.
+ *
+ * Google returns the exact wait in a RetryInfo detail on every 429. Honouring it
+ * is both more reliable and faster than guessing, so it is handled here in the
+ * fetch layer rather than per call site: every model call in the project —
+ * generation, ingest, chat, eval — goes through it for free.
+ */
+const MAX_429_RETRIES = 8;
+
+/**
+ * Minimum spacing between requests. Batch scripts set this so they stay under
+ * the cap instead of sprinting into it and backing off; the app leaves it at 0,
+ * because a chat turn is a handful of sequential calls and pacing would only
+ * add latency.
+ */
+function minIntervalMs(): number {
+  return Number(process.env.LLM_MIN_INTERVAL_MS ?? 0) || 0;
+}
+
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(() => resolve(), ms));
+
+/** Serialises request *starts* so concurrent callers still respect the spacing. */
+let gate: Promise<void> = Promise.resolve();
+
+function pace(): Promise<void> {
+  const interval = minIntervalMs();
+  if (interval <= 0) return Promise.resolve();
+  const wait = gate.then(() => sleep(interval));
+  gate = wait;
+  return wait;
+}
+
+/** Parse `retryDelay: "37.9s"` out of a 429 body, in ms. */
+async function retryAfterMs(response: Response): Promise<number> {
+  const header = response.headers.get('retry-after');
+  if (header && Number.isFinite(Number(header))) return Number(header) * 1000 + 500;
+  try {
+    const body = (await response.clone().json()) as {
+      error?: { details?: { '@type'?: string; retryDelay?: string }[] };
+    };
+    for (const detail of body.error?.details ?? []) {
+      const seconds = Number.parseFloat(detail.retryDelay ?? '');
+      if (Number.isFinite(seconds)) return seconds * 1000 + 500;
+    }
+  } catch {
+    // Body was not JSON; fall through to the default.
+  }
+  return 30_000;
+}
+
+const throttledFetch: typeof fetch = async (input, init) => {
+  for (let attempt = 0; ; attempt++) {
+    await pace();
+    const response = await fetch(input, init);
+    if (response.status !== 429 || attempt >= MAX_429_RETRIES) return response;
+
+    const wait = await retryAfterMs(response);
+    if (minIntervalMs() > 0) {
+      console.warn(`  … rate limited, waiting ${(wait / 1000).toFixed(0)}s (attempt ${attempt + 1}/${MAX_429_RETRIES})`);
+    }
+    await sleep(wait);
+  }
+};
+
 let cachedProvider: ReturnType<typeof createGoogleGenerativeAI> | null = null;
 
 function provider() {
   if (!cachedProvider) {
-    cachedProvider = createGoogleGenerativeAI({ apiKey: requireApiKey() });
+    cachedProvider = createGoogleGenerativeAI({ apiKey: requireApiKey(), fetch: throttledFetch });
   }
   return cachedProvider;
 }
