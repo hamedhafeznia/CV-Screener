@@ -85,11 +85,18 @@ export async function buildClassicSystemPrompt(question: string): Promise<{ syst
  * rather than as text being written. `smoothStream` re-chunks it word by word at
  * a steady rate, which is what makes a streamed answer feel streamed.
  *
+ * 4ms is ~250 words/second — fast enough that a nineteen-candidate list lands in
+ * about a second, slow enough to still read as writing rather than a paint.
+ * Tune with STREAM_DELAY_MS; 0 disables the pacing entirely.
+ *
  * It is presentation only: no token is added, removed or reordered, and the
  * non-streaming `answerQuestion` path used by the eval does not go through it,
  * so the measured numbers are unaffected.
  */
-const SMOOTHING = smoothStream({ delayInMs: 12, chunking: 'word' });
+const SMOOTHING = smoothStream({
+  delayInMs: Number(process.env.STREAM_DELAY_MS ?? 4),
+  chunking: 'word',
+});
 
 export async function streamAnswer(messages: ModelMessage[], mode: ChatMode, question: string) {
   if (mode === 'classic') {

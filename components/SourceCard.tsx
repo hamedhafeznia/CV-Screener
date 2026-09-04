@@ -72,3 +72,17 @@ export function SourceGrid({ citations }: { citations: Citation[] }) {
     </div>
   );
 }
+
+/**
+ * Placeholder chips while retrieval is in flight. Holding the space stops the
+ * answer from jumping down the page when the real sources land.
+ */
+export function SourceSkeleton() {
+  return (
+    <div className="flex flex-wrap items-center gap-1.5" aria-hidden>
+      {[104, 132, 118].map((width, i) => (
+        <div key={i} className="skeleton h-[30px] rounded-[var(--radius)]" style={{ width }} />
+      ))}
+    </div>
+  );
+}
