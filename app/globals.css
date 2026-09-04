@@ -1,26 +1,112 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+/**
+ * Design tokens (PRD §8.2).
+ *
+ * This is an internal recruiting tool, not a chat product. Four type sizes, one
+ * radius, one accent, no decoration that competes with the content. The
+ * interface's job is to make the retrieval legible: the answer is primary,
+ * source cards are secondary, tool-call chips are present but quiet.
+ */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: oklch(0.99 0 0);
+  --surface: oklch(0.97 0.002 250);
+  --surface-2: oklch(0.945 0.003 250);
+  --border: oklch(0.92 0.004 250);
+  --text: oklch(0.22 0.01 250);
+  --muted: oklch(0.55 0.01 250);
+  --accent: oklch(0.52 0.13 240);
+  --accent-bg: oklch(0.96 0.02 240);
+  --danger: oklch(0.55 0.16 25);
+}
+
+.dark {
+  --bg: oklch(0.17 0.005 250);
+  --surface: oklch(0.21 0.006 250);
+  --surface-2: oklch(0.25 0.007 250);
+  --border: oklch(0.3 0.008 250);
+  --text: oklch(0.93 0.004 250);
+  --muted: oklch(0.66 0.012 250);
+  --accent: oklch(0.72 0.12 240);
+  --accent-bg: oklch(0.27 0.04 245);
+  --danger: oklch(0.7 0.15 25);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-bg: var(--accent-bg);
+  --color-danger: var(--danger);
+
+  --text-xs: 0.75rem; /* tool chips, page badges */
+  --text-sm: 0.875rem; /* sidebar, source cards */
+  --text-base: 1rem; /* chat body */
+  --text-lg: 1.25rem; /* the one heading */
+
+  --radius: 0.5rem;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+  }
+  ::selection {
+    background: var(--accent-bg);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Minimal prose for the streamed answer: readable, not styled like a blog. */
+  .answer > * + * {
+    margin-top: 0.7rem;
+  }
+  .answer ul,
+  .answer ol {
+    padding-left: 1.15rem;
+  }
+  .answer ul {
+    list-style: disc;
+  }
+  .answer ol {
+    list-style: decimal;
+  }
+  .answer li + li {
+    margin-top: 0.25rem;
+  }
+  .answer strong {
+    font-weight: 600;
+  }
+  .answer code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--surface-2);
+    padding: 0.1em 0.35em;
+    border-radius: 0.25rem;
+  }
+
+  .scrollbar-slim::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-slim::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+  .scrollbar-slim::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
