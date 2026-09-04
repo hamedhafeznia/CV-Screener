@@ -22,15 +22,16 @@ type ButtonVariant = 'default' | 'ghost' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'icon';
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
-  default: 'bg-accent text-white hover:opacity-90',
-  ghost: 'hover:bg-surface-2 text-text',
-  outline: 'border border-border bg-bg hover:bg-surface text-text',
+  // The only saturated element on the page, and only ever the send button.
+  default: 'bg-accent text-black hover:opacity-88',
+  ghost: 'text-muted hover:bg-surface-2 hover:text-text',
+  outline: 'bg-surface text-text hover:bg-surface-2',
 };
 
 const BUTTON_SIZES: Record<ButtonSize, string> = {
   sm: 'h-7 px-2.5 text-xs',
   md: 'h-9 px-3.5 text-sm',
-  icon: 'h-9 w-9',
+  icon: 'size-9',
 };
 
 export function Button({
@@ -42,9 +43,9 @@ export function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center gap-1.5 rounded-[var(--radius)] font-medium transition-colors',
-        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
-        'disabled:pointer-events-none disabled:opacity-45',
+        'inline-flex items-center justify-center gap-1.5 rounded-full font-medium transition-colors',
+        'focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-faint',
+        'disabled:pointer-events-none disabled:opacity-35',
         BUTTON_VARIANTS[variant],
         BUTTON_SIZES[size],
         className,
@@ -63,7 +64,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTML
         ref={ref}
         className={cn(
           'w-full resize-none bg-transparent text-base leading-6 text-text outline-none',
-          'placeholder:text-muted disabled:opacity-50',
+          'placeholder:text-faint disabled:opacity-50',
           className,
         )}
         {...props}
@@ -75,7 +76,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTML
 /* ------------------------------------------------------------------ Card --- */
 
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('rounded-[var(--radius)] border border-border bg-surface', className)} {...props} />;
+  return <div className={cn('rounded-[var(--radius)] bg-surface', className)} {...props} />;
 }
 
 /* ----------------------------------------------------------------- Badge --- */
@@ -84,8 +85,8 @@ export function Badge({ className, ...props }: React.HTMLAttributes<HTMLSpanElem
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border border-border bg-surface-2 px-1.5 py-0.5',
-        'font-mono text-xs leading-none text-muted',
+        'inline-flex items-center rounded-full bg-surface-2 px-1.5 py-0.5',
+        'font-mono text-xs leading-none text-faint',
         className,
       )}
       {...props}
@@ -112,10 +113,10 @@ export function Avatar({
 
   return (
     <AvatarPrimitive.Root
-      className={cn('relative flex size-8 shrink-0 overflow-hidden rounded-full bg-surface-2', className)}
+      className={cn('relative flex size-7 shrink-0 overflow-hidden rounded-full bg-surface-2', className)}
     >
       {src ? <AvatarPrimitive.Image src={src} alt="" className="size-full object-cover" /> : null}
-      <AvatarPrimitive.Fallback className="flex size-full items-center justify-center text-xs font-medium text-muted">
+      <AvatarPrimitive.Fallback className="flex size-full items-center justify-center text-[10px] font-medium text-faint">
         {initials}
       </AvatarPrimitive.Fallback>
     </AvatarPrimitive.Root>
@@ -162,15 +163,16 @@ export function DialogContent({
       <DialogPrimitive.Content
         className={cn(
           'fixed left-1/2 top-1/2 z-50 flex max-h-[92vh] w-[min(920px,94vw)] -translate-x-1/2 -translate-y-1/2',
-          'flex-col overflow-hidden rounded-[var(--radius)] border border-border bg-bg shadow-2xl',
+          'flex-col overflow-hidden rounded-[var(--radius-lg)] bg-bg shadow-[0_24px_80px_-12px_rgba(0,0,0,0.9)]',
+          'outline outline-1 -outline-offset-1 outline-border',
           className,
         )}
       >
-        <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-2.5">
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
           <div className="min-w-0">
-            <DialogPrimitive.Title className="truncate text-sm font-medium text-text">{title}</DialogPrimitive.Title>
+            <DialogPrimitive.Title className="truncate text-sm text-text">{title}</DialogPrimitive.Title>
             {description ? (
-              <DialogPrimitive.Description className="truncate font-mono text-xs text-muted">
+              <DialogPrimitive.Description className="truncate font-mono text-xs text-faint">
                 {description}
               </DialogPrimitive.Description>
             ) : (

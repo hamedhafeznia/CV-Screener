@@ -6,43 +6,109 @@ import { cn } from '@/lib/utils';
 import { summarizeInput, summarizeOutput, type ToolPart } from '@/components/types';
 
 /**
- * Tertiary tier (PRD §8.3): 12px mono, muted, collapsed by default.
+ * Tertiary tier (PRD §8.3): quiet, collapsed, but never hidden.
  *
- * Quiet but present is exactly the point. The chip is what proves the answer
- * came from a real retrieval call — and which one the model chose — without
- * competing with the answer for attention.
+ * All of a turn's tool activity collapses into one row — how many calls, how
+ * many steps, how long — and expands to the individual calls with their
+ * arguments and results. Present enough to prove the answer came from real
+ * retrieval and to show which retriever the model chose; small enough that it
+ * never competes with the answer above it.
  */
-export function ToolCallChip({ toolName, part }: { toolName: string; part: ToolPart }) {
-  const [expanded, setExpanded] = useState(false);
 
+function StepDots({ done, total }: { done: number; total: number }) {
+  return (
+    <span className="flex items-center gap-[3px]" aria-hidden>
+      {Array.from({ length: total }, (_, i) => (
+        <span
+          key={i}
+          className={cn('size-1 rounded-full transition-colors', i < done ? 'bg-muted' : 'bg-surface-2')}
+        />
+      ))}
+    </span>
+  );
+}
+
+function ToolRow({ toolName, part }: { toolName: string; part: ToolPart }) {
+  const [open, setOpen] = useState(false);
   const pending = part.state === 'input-streaming' || part.state === 'input-available';
   const failed = part.state === 'output-error';
   const args = summarizeInput(part.input);
   const result = failed ? (part.errorText ?? 'failed') : summarizeOutput(toolName, part.output);
 
   return (
-    <div className="font-mono text-xs">
+    <div>
       <button
         type="button"
-        onClick={() => setExpanded((value) => !value)}
+        onClick={() => setOpen((value) => !value)}
         className={cn(
-          'flex w-full items-center gap-1.5 rounded-[var(--radius)] px-1.5 py-1 text-left transition-colors hover:bg-surface-2',
-          failed ? 'text-danger' : 'text-muted',
+          'flex w-full items-center gap-1.5 rounded-[var(--radius)] px-2 py-1.5 text-left',
+          'font-mono text-xs transition-colors hover:bg-surface-2',
+          failed ? 'text-danger' : 'text-faint',
         )}
       >
-        <ChevronRight className={cn('size-3 shrink-0 transition-transform', expanded && 'rotate-90')} />
-        {pending ? <Loader2 className="size-3 shrink-0 animate-spin" /> : <span className="shrink-0">⌗</span>}
+        <ChevronRight className={cn('size-3 shrink-0 transition-transform', open && 'rotate-90')} />
+        {pending ? <Loader2 className="size-3 shrink-0 animate-spin" /> : null}
         <span className="truncate">
-          <span className="text-text/70">{toolName}</span>
+          <span className="text-muted">{toolName}</span>
           {args ? <span> · {args}</span> : null}
-          {result ? <span className="text-text/70"> → {result}</span> : null}
+          {result ? <span className="text-muted"> → {result}</span> : null}
         </span>
       </button>
 
-      {expanded ? (
-        <pre className="mt-1 max-h-64 overflow-auto rounded-[var(--radius)] border border-border bg-surface px-2.5 py-2 text-[11px] leading-relaxed text-muted scrollbar-slim">
+      {open ? (
+        <pre className="mx-2 mb-1 max-h-64 overflow-auto rounded-[var(--radius)] bg-page/40 px-3 py-2 font-mono text-[11px] leading-relaxed text-faint scrollbar-slim">
           {JSON.stringify({ input: part.input, output: part.output ?? part.errorText }, null, 2)}
         </pre>
+      ) : null}
+    </div>
+  );
+}
+
+export function ToolTrace({
+  tools,
+  steps,
+  seconds,
+  streaming,
+}: {
+  tools: { toolName: string; part: ToolPart }[];
+  steps: number;
+  seconds?: number;
+  streaming: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  if (tools.length === 0) return null;
+
+  const done = tools.filter((t) => t.part.state === 'output-available' || t.part.state === 'output-error').length;
+
+  return (
+    <div className="rounded-[var(--radius)] bg-surface">
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-3 px-3.5 py-2.5 text-left text-xs text-faint transition-colors hover:text-muted"
+      >
+        <span className="tabular-nums">
+          {tools.length} tool{tools.length === 1 ? '' : 's'}
+        </span>
+        <span className="text-surface-2">|</span>
+        <span className="flex items-center gap-2 tabular-nums">
+          {done}/{tools.length}
+          <StepDots done={done} total={tools.length} />
+        </span>
+        <span className="text-surface-2">|</span>
+        <span className="tabular-nums">
+          {streaming ? `${steps} step${steps === 1 ? '' : 's'}` : seconds !== undefined ? `${seconds.toFixed(1)}s` : '—'}
+        </span>
+        <ChevronRight className={cn('ml-auto size-3.5 shrink-0 transition-transform', open && 'rotate-90')} />
+      </button>
+
+      {open ? (
+        <div className="pb-1.5">
+          {tools.map(({ toolName, part }, i) => (
+            <ToolRow key={part.toolCallId ?? i} toolName={toolName} part={part} />
+          ))}
+        </div>
       ) : null}
     </div>
   );

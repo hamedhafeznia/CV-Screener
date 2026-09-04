@@ -1,82 +1,86 @@
 @import 'tailwindcss';
 
 /**
- * Design tokens (PRD §8.2).
+ * Design tokens.
  *
- * This is an internal recruiting tool, not a chat product. Four type sizes, one
- * radius, one accent, no decoration that competes with the content. The
- * interface's job is to make the retrieval legible: the answer is primary,
- * source cards are secondary, tool-call chips are present but quiet.
+ * Dark, near-black, and borderless: surfaces are separated by elevation rather
+ * than by lines, and everything except the answer itself is held back to a muted
+ * grey. That serves the hierarchy the PRD asks for in §8.3 — the answer is
+ * primary, sources are secondary, tool calls are present but quiet — with less
+ * visual furniture than borders and tints would need.
+ *
+ * One accent (white, used only for the send button), one type scale, two radii.
  */
 
 :root {
-  --bg: oklch(0.99 0 0);
-  --surface: oklch(0.97 0.002 250);
-  --surface-2: oklch(0.945 0.003 250);
-  --border: oklch(0.92 0.004 250);
-  --text: oklch(0.22 0.01 250);
-  --muted: oklch(0.55 0.01 250);
-  --accent: oklch(0.52 0.13 240);
-  --accent-bg: oklch(0.96 0.02 240);
-  --danger: oklch(0.55 0.16 25);
-}
+  /* The page behind the app frame. */
+  --page: oklch(0 0 0);
+  /* The frame itself, and everything that sits flat on it. */
+  --bg: oklch(0.16 0.002 260);
+  /* Raised: user message, tool bar, composer, chips. */
+  --surface: oklch(0.215 0.003 260);
+  /* Raised further: the active sidebar row, hover states. */
+  --surface-2: oklch(0.25 0.004 260);
+  /* Hairlines. Used sparingly — one vertical rule, one under the top bar. */
+  --border: oklch(0.26 0.004 260);
 
-.dark {
-  --bg: oklch(0.17 0.005 250);
-  --surface: oklch(0.21 0.006 250);
-  --surface-2: oklch(0.25 0.007 250);
-  --border: oklch(0.3 0.008 250);
-  --text: oklch(0.93 0.004 250);
-  --muted: oklch(0.66 0.012 250);
-  --accent: oklch(0.72 0.12 240);
-  --accent-bg: oklch(0.27 0.04 245);
-  --danger: oklch(0.7 0.15 25);
+  --text: oklch(0.93 0.002 260);
+  --muted: oklch(0.62 0.004 260);
+  --faint: oklch(0.47 0.004 260);
+  --accent: oklch(1 0 0);
+  --danger: oklch(0.68 0.15 25);
+
+  --text-xs: 0.75rem; /* meta, breadcrumbs, chips */
+  --text-sm: 0.875rem; /* sidebar, composer meta */
+  --text-base: 1rem; /* chat body */
+  --text-lg: 1.0625rem; /* the one heading */
+
+  --radius: 0.625rem;
+  --radius-lg: 0.875rem;
 }
 
 @theme inline {
+  --color-page: var(--page);
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-border: var(--border);
   --color-text: var(--text);
   --color-muted: var(--muted);
+  --color-faint: var(--faint);
   --color-accent: var(--accent);
-  --color-accent-bg: var(--accent-bg);
   --color-danger: var(--danger);
-
-  --text-xs: 0.75rem; /* tool chips, page badges */
-  --text-sm: 0.875rem; /* sidebar, source cards */
-  --text-base: 1rem; /* chat body */
-  --text-lg: 1.25rem; /* the one heading */
-
-  --radius: 0.5rem;
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 @layer base {
-  * {
-    border-color: var(--border);
+  html {
+    color-scheme: dark;
   }
   body {
-    background: var(--bg);
+    background: var(--page);
     color: var(--text);
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
   }
   ::selection {
-    background: var(--accent-bg);
+    background: oklch(0.35 0.005 260);
+  }
+  ::placeholder {
+    color: var(--faint);
   }
 }
 
 @layer utilities {
-  /* Minimal prose for the streamed answer: readable, not styled like a blog. */
+  /* Minimal prose for the streamed answer. Generous leading, nothing decorative. */
   .answer > * + * {
-    margin-top: 0.7rem;
+    margin-top: 0.85rem;
   }
   .answer ul,
   .answer ol {
-    padding-left: 1.15rem;
+    padding-left: 1.1rem;
   }
   .answer ul {
     list-style: disc;
@@ -85,26 +89,35 @@
     list-style: decimal;
   }
   .answer li + li {
-    margin-top: 0.25rem;
+    margin-top: 0.35rem;
+  }
+  .answer li::marker {
+    color: var(--faint);
   }
   .answer strong {
-    font-weight: 600;
+    font-weight: 550;
+    color: var(--text);
   }
   .answer code {
     font-family: var(--font-mono);
-    font-size: 0.85em;
-    background: var(--surface-2);
-    padding: 0.1em 0.35em;
-    border-radius: 0.25rem;
+    font-size: 0.86em;
+    color: var(--muted);
   }
 
+  /* Scrollbars are part of the furniture here — keep them nearly invisible. */
+  .scrollbar-slim {
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-2) transparent;
+  }
   .scrollbar-slim::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
   .scrollbar-slim::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
+    background: var(--surface-2);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
   }
   .scrollbar-slim::-webkit-scrollbar-track {
     background: transparent;

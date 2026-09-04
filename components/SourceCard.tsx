@@ -2,18 +2,19 @@
 
 import { useState } from 'react';
 import { FileText } from 'lucide-react';
-import { Avatar, Badge } from '@/components/ui/primitives';
+import { cn } from '@/lib/utils';
 import { PdfDialog } from '@/components/PdfDialog';
 import type { Citation } from '@/components/types';
 
 /**
- * Secondary tier (PRD §8.3): bordered, accent-tinted, clickable.
+ * Secondary tier (PRD §8.3): a row of compact chips under the answer, one per
+ * cited document, each opening the real PDF at the cited page.
  *
- * Reuses the generated headshot, which closes the loop between the generation
- * pipeline and the interface — the face in the citation is the face in the PDF
- * it opens.
+ * Chips rather than cards because a corpus-wide question can cite nineteen
+ * candidates — nineteen cards would bury the answer they belong to, while
+ * nineteen chips stay a readable footnote.
  */
-export function SourceCard({ citation }: { citation: Citation }) {
+export function SourceChip({ citation }: { citation: Citation }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -21,19 +22,18 @@ export function SourceCard({ citation }: { citation: Citation }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group flex w-full items-center gap-2.5 rounded-[var(--radius)] border border-border bg-accent-bg/50 px-2.5 py-2 text-left transition-colors hover:border-accent/40 hover:bg-accent-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        title={`${citation.name} — ${citation.current_title || 'CV'}, page ${citation.page}`}
+        className={cn(
+          'group inline-flex max-w-full items-center gap-2 rounded-[var(--radius)] bg-surface px-2.5 py-1.5',
+          'transition-colors hover:bg-surface-2 focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-faint',
+        )}
       >
-        <Avatar src={`/api/photo/${citation.candidate_id}`} name={citation.name} className="size-9" />
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium text-text">{citation.name}</span>
-          <span className="block truncate text-xs text-muted">
-            {citation.detail ? `${citation.current_title} · ${citation.detail}` : citation.current_title}
-          </span>
+        <FileText className="size-3.5 shrink-0 text-faint transition-colors group-hover:text-muted" />
+        <span className="truncate font-mono text-xs text-muted transition-colors group-hover:text-text">
+          {citation.candidate_id}
         </span>
-        <span className="flex shrink-0 items-center gap-1.5">
-          <Badge className="group-hover:border-accent/40">p.{citation.page}</Badge>
-          <FileText className="size-3.5 text-muted transition-colors group-hover:text-accent" />
-        </span>
+        <span className="truncate text-xs text-faint">{citation.name}</span>
+        {citation.page > 1 ? <span className="shrink-0 font-mono text-xs text-faint">p.{citation.page}</span> : null}
       </button>
 
       <PdfDialog
@@ -48,17 +48,27 @@ export function SourceCard({ citation }: { citation: Citation }) {
 }
 
 export function SourceGrid({ citations }: { citations: Citation[] }) {
+  const [showAll, setShowAll] = useState(false);
   if (citations.length === 0) return null;
+
+  const LIMIT = 12;
+  const shown = showAll ? citations : citations.slice(0, LIMIT);
+  const hidden = citations.length - shown.length;
+
   return (
-    <div className="mt-3">
-      <div className="mb-1.5 font-mono text-xs text-muted">
-        {citations.length} source{citations.length === 1 ? '' : 's'}
-      </div>
-      <div className="grid gap-1.5 sm:grid-cols-2">
-        {citations.map((citation) => (
-          <SourceCard key={`${citation.candidate_id}:${citation.page}`} citation={citation} />
-        ))}
-      </div>
+    <div className="flex flex-wrap items-center gap-1.5">
+      {shown.map((citation) => (
+        <SourceChip key={`${citation.candidate_id}:${citation.page}`} citation={citation} />
+      ))}
+      {hidden > 0 ? (
+        <button
+          type="button"
+          onClick={() => setShowAll(true)}
+          className="rounded-[var(--radius)] px-2.5 py-1.5 text-xs text-faint transition-colors hover:text-muted"
+        >
+          +{hidden} more
+        </button>
+      ) : null}
     </div>
   );
 }

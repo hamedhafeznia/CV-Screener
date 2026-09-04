@@ -2,15 +2,17 @@
 
 import { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Avatar, ScrollArea } from '@/components/ui/primitives';
 import { PdfDialog } from '@/components/PdfDialog';
 import type { Candidate } from '@/components/types';
 
 /**
- * PRD §8.4.4 — 280px, one row per candidate, live filter.
+ * PRD §8.4.4 — one row per candidate, live filter, click to open the CV.
  *
- * It is not decoration: it is the answer to "what is actually in this corpus?",
- * which is the first thing anyone evaluating a retrieval demo wants to know.
+ * Not decoration: it answers "what is actually in this corpus?", which is the
+ * first thing anyone evaluating a retrieval demo wants to know, and it keeps the
+ * generated headshots in view so the faces in the citations are recognisable.
  */
 export function CandidateSidebar({ candidates, error }: { candidates: Candidate[]; error?: string }) {
   const [query, setQuery] = useState('');
@@ -28,44 +30,55 @@ export function CandidateSidebar({ candidates, error }: { candidates: Candidate[
   }, [candidates, query]);
 
   return (
-    <aside className="flex w-[280px] shrink-0 flex-col border-r border-border bg-surface">
-      <div className="border-b border-border px-3 py-3">
-        <div className="mb-2 flex items-baseline justify-between">
-          <h1 className="text-lg font-semibold tracking-tight text-text">CV Screener</h1>
-          <span className="font-mono text-xs text-muted">{candidates.length} indexed</span>
-        </div>
-        <div className="flex items-center gap-2 rounded-[var(--radius)] border border-border bg-bg px-2.5 py-1.5">
-          <Search className="size-3.5 shrink-0 text-muted" />
+    <aside className="flex w-[272px] shrink-0 flex-col border-r border-border">
+      <div className="flex items-center justify-between px-5 pb-2 pt-4">
+        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-faint">Candidates</span>
+        <span className="font-mono text-[11px] text-faint tabular-nums">{candidates.length}</span>
+      </div>
+
+      <div className="px-3 pb-2">
+        <div className="flex items-center gap-2 rounded-[var(--radius)] px-2 py-1.5 transition-colors focus-within:bg-surface">
+          <Search className="size-3.5 shrink-0 text-faint" />
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Filter candidates"
+            placeholder="Filter"
             aria-label="Filter candidates"
-            className="w-full bg-transparent text-sm text-text outline-none placeholder:text-muted"
+            className="w-full bg-transparent text-sm text-text outline-none"
           />
         </div>
       </div>
 
       <ScrollArea className="flex-1">
         {error ? (
-          <p className="px-3 py-4 text-sm leading-relaxed text-muted">{error}</p>
+          <p className="px-5 py-3 text-sm leading-relaxed text-faint">{error}</p>
         ) : filtered.length === 0 ? (
-          <p className="px-3 py-4 text-sm text-muted">No candidate matches “{query}”.</p>
+          <p className="px-5 py-3 text-sm text-faint">
+            {candidates.length === 0 ? 'No index built yet.' : `Nothing matches “${query}”.`}
+          </p>
         ) : (
-          <ul className="py-1">
+          <ul className="px-2 pb-4">
             {filtered.map((candidate) => (
               <li key={candidate.id}>
                 <button
                   type="button"
                   onClick={() => setOpen(candidate)}
-                  className="flex w-full items-center gap-2.5 px-3 py-1.5 text-left transition-colors hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+                  className={cn(
+                    'flex w-full items-center gap-2.5 rounded-[var(--radius)] px-3 py-2 text-left transition-colors',
+                    'hover:bg-surface focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-faint',
+                    open?.id === candidate.id && 'bg-surface',
+                  )}
                 >
-                  <Avatar src={`/api/photo/${candidate.id}`} name={candidate.name} />
+                  <Avatar src={`/api/photo/${candidate.id}`} name={candidate.name} className="saturate-[0.7]" />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm text-text">{candidate.name}</span>
-                    <span className="block truncate text-xs text-muted">{candidate.current_title}</span>
+                    <span className="block truncate text-sm leading-tight text-text">{candidate.name}</span>
+                    <span className="mt-0.5 block truncate text-xs leading-tight text-faint">
+                      {candidate.current_title}
+                    </span>
                   </span>
-                  <span className="shrink-0 font-mono text-xs text-muted">{candidate.years_experience}y</span>
+                  <span className="shrink-0 font-mono text-[11px] text-faint tabular-nums">
+                    {candidate.years_experience}y
+                  </span>
                 </button>
               </li>
             ))}

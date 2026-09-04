@@ -1,21 +1,21 @@
 'use client';
 
 import type { UIMessage } from 'ai';
-import { ToolCallChip } from '@/components/ToolCallChip';
+import { ToolTrace } from '@/components/ToolCallChip';
 import { SourceGrid } from '@/components/SourceCard';
 import { citationsFromOutput, toolNameOf, type Citation, type ToolPart } from '@/components/types';
 
 /**
- * PRD §8.4.1 — user messages are right-aligned and capped; assistant answers are
- * full-width with no bubble. The answer is the primary tier of the page, and a
- * chat bubble is a frame around it that earns nothing.
+ * PRD §8.4.1 — the user's turn is a right-aligned pill; the answer is full-width
+ * with no bubble at all. The answer is the primary tier of the page, and a frame
+ * around it would only compete with it.
  */
 
-/** Render `cv_014` and the ids inside `(cv_014)` in mono so citations read as data. */
+/** Render `cv_014` in mono so citations read as data rather than prose. */
 function withInlineIds(text: string) {
   return text.split(/(\bcv_\d{3}\b)/g).map((piece, i) =>
     /^cv_\d{3}$/.test(piece) ? (
-      <span key={i} className="font-mono text-[0.85em] text-accent">
+      <span key={i} className="font-mono text-[0.85em] text-muted">
         {piece}
       </span>
     ) : (
@@ -24,15 +24,26 @@ function withInlineIds(text: string) {
   );
 }
 
+/** Strip the markdown emphasis the model sometimes adds, and bold what it wrapped. */
+function withEmphasis(text: string) {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((piece, i) =>
+    piece.startsWith('**') && piece.endsWith('**') ? (
+      <strong key={i}>{withInlineIds(piece.slice(2, -2))}</strong>
+    ) : (
+      <span key={i}>{withInlineIds(piece)}</span>
+    ),
+  );
+}
+
 /**
  * Deliberately not a markdown renderer. The system prompt asks for short lists
- * and plain sentences, so paragraph and bullet handling is all this needs — and
+ * and plain sentences, so paragraphs, bullets and bold are all this needs — and
  * a dependency-free version cannot render anything the model did not intend.
  */
 function AnswerText({ text }: { text: string }) {
   const blocks = text.split(/\n{2,}/);
   return (
-    <div className="answer text-base leading-7 text-text">
+    <div className="answer text-base leading-[1.7] text-text">
       {blocks.map((block, blockIndex) => {
         const lines = block.split('\n').filter((line) => line.trim());
         const bulleted = lines.length > 0 && lines.every((line) => /^\s*([-*•]|\d+[.)])\s+/.test(line));
@@ -40,18 +51,26 @@ function AnswerText({ text }: { text: string }) {
           return (
             <ul key={blockIndex}>
               {lines.map((line, i) => (
-                <li key={i}>{withInlineIds(line.replace(/^\s*([-*•]|\d+[.)])\s+/, ''))}</li>
+                <li key={i}>{withEmphasis(line.replace(/^\s*([-*•]|\d+[.)])\s+/, ''))}</li>
               ))}
             </ul>
           );
         }
-        return <p key={blockIndex}>{withInlineIds(block)}</p>;
+        return <p key={blockIndex}>{withEmphasis(block)}</p>;
       })}
     </div>
   );
 }
 
-export function Message({ message }: { message: UIMessage }) {
+export function Message({
+  message,
+  seconds,
+  streaming,
+}: {
+  message: UIMessage;
+  seconds?: number;
+  streaming: boolean;
+}) {
   if (message.role === 'user') {
     const text = message.parts
       .filter((part): part is { type: 'text'; text: string } => part.type === 'text')
@@ -59,25 +78,30 @@ export function Message({ message }: { message: UIMessage }) {
       .join('');
     return (
       <div className="flex justify-end">
-        <div className="max-w-[80%] whitespace-pre-wrap rounded-[var(--radius)] bg-surface-2 px-3.5 py-2 text-base leading-6 text-text">
+        <div className="max-w-[75%] whitespace-pre-wrap rounded-[var(--radius-lg)] bg-surface px-4 py-2.5 text-base leading-6 text-text">
           {text}
         </div>
       </div>
     );
   }
 
+  // Tool activity collapses into one trace above the answer; citations are
+  // gathered from every tool result and rendered as chips below it.
+  const tools: { toolName: string; part: ToolPart }[] = [];
   const citations: Citation[] = [];
   const seen = new Set<string>();
+  const text: string[] = [];
 
-  const rendered = message.parts.map((part, index) => {
+  for (const part of message.parts) {
     if (part.type === 'text') {
-      return part.text.trim() ? <AnswerText key={index} text={part.text} /> : null;
+      if (part.text.trim()) text.push(part.text);
+      continue;
     }
-
     const toolName = toolNameOf(part);
-    if (!toolName) return null;
+    if (!toolName) continue;
 
     const toolPart = part as unknown as ToolPart;
+    tools.push({ toolName, part: toolPart });
     if (toolPart.state === 'output-available') {
       for (const citation of citationsFromOutput(toolPart.output)) {
         const key = `${citation.candidate_id}:${citation.page}`;
@@ -87,12 +111,14 @@ export function Message({ message }: { message: UIMessage }) {
         }
       }
     }
-    return <ToolCallChip key={toolPart.toolCallId ?? index} toolName={toolName} part={toolPart} />;
-  });
+  }
 
   return (
-    <div className="space-y-2">
-      {rendered}
+    <div className="space-y-4">
+      <ToolTrace tools={tools} steps={tools.length + 1} seconds={seconds} streaming={streaming} />
+      {text.map((block, i) => (
+        <AnswerText key={i} text={block} />
+      ))}
       <SourceGrid citations={citations} />
     </div>
   );
