@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { normalizeInstitution, normalizeSkill } from '../lib/aliases';
 import { CVProfileSchema, type CVProfile } from '../lib/schemas';
+import type { FilterInput } from '../lib/tools';
 
 /**
  * The eval oracle (PRD §12).
@@ -22,6 +23,17 @@ export type QuestionShape =
   | 'multi-constraint'
   | 'negative';
 
+/**
+ * The tool call that ideally answers a question.
+ *
+ * Derived alongside the expected answer rather than chosen by a model, so the
+ * retrieval tier measures what each architecture *can* reach — its ceiling —
+ * independently of whether a given model routes correctly on a given day.
+ */
+export type IdealRetrieval =
+  | { tool: 'filter_candidates'; input: FilterInput }
+  | { tool: 'get_cv'; input: { candidate_id: string } };
+
 export interface EvalQuestion {
   id: string;
   question: string;
@@ -30,6 +42,8 @@ export interface EvalQuestion {
   expected: string[];
   /** Why this question is in the set — printed in the report. */
   note: string;
+  /** The retrieval call that would answer it perfectly. */
+  ideal: IdealRetrieval;
 }
 
 export function loadGroundTruth(): CVProfile[] {
@@ -94,13 +108,13 @@ function acronymQuestions(corpus: CVProfile[]): EvalQuestion[] {
       shape: 'exact-filter' as const,
       expected,
       note: `${acronym} never appears on a CV — only "${full}" does.`,
+      ideal: { tool: 'filter_candidates' as const, input: { institution: acronym } },
     }));
 }
 
 /** A (seniority, city, skill) triple that actually matches somebody. */
 function multiConstraintQuestions(corpus: CVProfile[]): EvalQuestion[] {
   const out: EvalQuestion[] = [];
-  const seniorities = ['senior', 'lead', 'principal'] as const;
   const cities = [...new Set(corpus.map(city))];
   const skills = informativeSkills(corpus, 12);
 
@@ -109,7 +123,7 @@ function multiConstraintQuestions(corpus: CVProfile[]): EvalQuestion[] {
       const expected = corpus
         .filter(
           (p) =>
-            seniorities.includes(p.seniority as (typeof seniorities)[number]) &&
+            p.seniority === 'senior' &&
             city(p) === location &&
             p.skills.some((s) => normalizeSkill(s.name) === normalizeSkill(skill)),
         )
@@ -118,10 +132,11 @@ function multiConstraintQuestions(corpus: CVProfile[]): EvalQuestion[] {
       if (expected.length >= 1 && expected.length <= 4) {
         out.push({
           id: `multi-${out.length + 1}`,
-          question: `Which senior or above candidates are based in ${location} and know ${skill}?`,
+          question: `Which senior candidates are based in ${location} and know ${skill}?`,
           shape: 'multi-constraint',
           expected,
           note: 'Three constraints ANDed together — seniority, location, skill.',
+          ideal: { tool: 'filter_candidates', input: { skill, location, seniority: 'senior' } },
         });
       }
       if (out.length === 2) return out;
@@ -143,6 +158,7 @@ function negativeQuestions(corpus: CVProfile[]): EvalQuestion[] {
       shape: 'negative',
       expected: [],
       note: `Nobody in the corpus worked at ${absent[0]}. The right answer is to say so.`,
+      ideal: { tool: 'filter_candidates', input: { company: absent[0] } },
     });
   }
 
@@ -154,6 +170,7 @@ function negativeQuestions(corpus: CVProfile[]): EvalQuestion[] {
       shape: 'negative',
       expected: [],
       note: 'No candidate lists COBOL. Near-misses must not be offered as matches.',
+      ideal: { tool: 'filter_candidates', input: { skill: 'COBOL' } },
     });
   }
 
@@ -173,6 +190,7 @@ export function buildQuestions(corpus: CVProfile[] = loadGroundTruth()): EvalQue
       shape: 'aggregation',
       expected: python,
       note: `${python.length} of ${corpus.length} candidates list Python. Classic top-5 can return at most 5.`,
+      ideal: { tool: 'filter_candidates', input: { skill: 'Python' } },
     });
   }
   for (const skill of informativeSkills(corpus, 3)) {
@@ -184,6 +202,7 @@ export function buildQuestions(corpus: CVProfile[] = loadGroundTruth()): EvalQue
       shape: 'aggregation',
       expected,
       note: `${expected.length} candidates list ${skill}.`,
+      ideal: { tool: 'filter_candidates', input: { skill } },
     });
   }
 
@@ -195,6 +214,7 @@ export function buildQuestions(corpus: CVProfile[] = loadGroundTruth()): EvalQue
       shape: 'aggregation',
       expected: spanish,
       note: `${spanish.length} candidates. Asks for a count as well as the set.`,
+      ideal: { tool: 'filter_candidates', input: { language: 'Spanish' } },
     });
   }
 
@@ -209,6 +229,7 @@ export function buildQuestions(corpus: CVProfile[] = loadGroundTruth()): EvalQue
       shape: 'document',
       expected: [profile.id],
       note: 'Needs the whole CV, not whichever chunks ranked highest.',
+      ideal: { tool: 'get_cv', input: { candidate_id: profile.id } },
     });
   }
 

@@ -1,83 +1,97 @@
 import { afterAll, describe, expect, it } from 'vitest';
 import { answerQuestion } from '../lib/agent';
+import { CLASSIC_TOP_K } from '../lib/agent';
 import { indexExists } from '../lib/stores';
 import { hasApiKey } from '../lib/llm';
+import { measureRetrieval, type RetrievalMeasurement } from './retrieval';
 import { buildQuestions, loadGroundTruth, score, type EvalQuestion, type Score } from './questions';
 import type { ChatMode } from '../lib/schemas';
 
 /**
  * Agentic vs classic RAG, measured (PRD §12).
  *
- * The headline claim of this project is that tool-routed retrieval answers
- * questions that top-k retrieval structurally cannot. This file is what turns
- * that from an architectural assertion into a number, using ground truth we get
- * for free because we generated the corpus.
+ * Two tiers, because they answer different questions:
  *
- *   npm run eval
+ *   1. RETRIEVAL — what each architecture *can* reach. Deterministic, no chat
+ *      model, one embedding per question. This is where the structural claim
+ *      lives: top-k caps recall at k no matter which model reads the chunks.
+ *
+ *   2. END-TO-END — whether the model actually gets there through the real chat
+ *      path. Costs several chat requests per question, so it runs on a subset by
+ *      default and is skipped entirely when no key is configured.
+ *
+ * Splitting them matters methodologically as well as practically: tier 1 removes
+ * model variance from the headline number, so the gap is attributable to the
+ * architecture rather than to whichever model happened to answer that day.
+ *
+ *   npm run eval                    # retrieval + a 2-question end-to-end sample
+ *   EVAL_E2E=0 npm run eval         # retrieval only, zero chat requests
+ *   EVAL_E2E=13 npm run eval        # full end-to-end (needs generous quota)
  */
 
+const E2E_COUNT = Number(process.env.EVAL_E2E ?? 2);
 const MODES: ChatMode[] = ['agentic', 'classic'];
 
-interface Row {
-  question: EvalQuestion;
-  mode: ChatMode;
-  score: Score;
-  cited: string[];
-  tools: string[];
-  text: string;
-}
+const indexed = indexExists();
+const questions = indexed ? buildQuestions() : [];
 
-const rows: Row[] = [];
+const retrieval: RetrievalMeasurement[] = [];
+const endToEnd: { question: EvalQuestion; mode: ChatMode; score: Score; cited: string[]; text: string }[] = [];
 
-const ready = indexExists() && hasApiKey();
-const questions = ready ? buildQuestions() : [];
-
-describe.skipIf(!ready)('agentic vs classic RAG', () => {
-  const corpus = ready ? loadGroundTruth() : [];
-
+describe.skipIf(!indexed)('retrieval ceiling (no chat model)', () => {
   it('derives its questions from ground truth', () => {
+    const corpus = loadGroundTruth();
     expect(corpus.length).toBeGreaterThanOrEqual(25);
     expect(questions.length).toBeGreaterThanOrEqual(10);
-    // Every shape from PRD §1 and §12 must be represented.
     for (const shape of ['aggregation', 'exact-filter', 'document', 'multi-constraint', 'negative'] as const) {
       expect(questions.some((q) => q.shape === shape), `missing shape: ${shape}`).toBe(true);
     }
   });
 
-  for (const mode of MODES) {
-    describe(mode, () => {
-      for (const question of questions) {
-        it(
-          `${question.id}: ${question.question}`,
-          { timeout: 180_000 },
-          async () => {
-            const answer = await answerQuestion(question.question, mode);
-            const result = score(question.expected, answer.citedIds);
-            rows.push({
-              question,
-              mode,
-              score: result,
-              cited: answer.citedIds,
-              tools: answer.toolCalls.map((c) => c.name),
-              text: answer.text,
-            });
+  for (const question of questions) {
+    it(`${question.id}: ${question.question}`, { timeout: 120_000 }, async () => {
+      const measurement = await measureRetrieval(question);
+      retrieval.push(measurement);
 
-            // Only the agentic path is asserted. Classic is the baseline being
-            // measured, and failing the suite because the baseline is bad would
-            // defeat the purpose of running it.
-            if (mode === 'agentic') {
-              if (question.shape === 'negative') {
-                expect(answer.citedIds, `hallucinated: ${answer.text.slice(0, 200)}`).toEqual([]);
-              } else {
-                expect(result.recall, `recall too low. cited=${answer.citedIds.join(',')} expected=${question.expected.join(',')}`).toBeGreaterThanOrEqual(0.9);
-              }
-            }
-          },
-        );
-      }
+      // The agentic retriever is asserted; classic is the baseline being
+      // measured, and failing the suite because the baseline is bad would
+      // defeat the point of running it.
+      expect(
+        measurement.agentic.score.recall,
+        `agentic retrieval missed candidates. got=${measurement.agentic.ids.join(',')} expected=${question.expected.join(',')}`,
+      ).toBe(1);
+      expect(measurement.agentic.score.precision, 'agentic retrieval returned non-matches').toBe(1);
     });
   }
 });
+
+const e2eQuestions = questions.slice(0, Math.max(0, E2E_COUNT));
+const runE2E = indexed && hasApiKey() && e2eQuestions.length > 0;
+
+describe.skipIf(!runE2E)('end-to-end through the chat path', () => {
+  for (const mode of MODES) {
+    for (const question of e2eQuestions) {
+      it(`${mode} · ${question.id}`, { timeout: 300_000 }, async () => {
+        const answer = await answerQuestion(question.question, mode);
+        const result = score(question.expected, answer.citedIds);
+        endToEnd.push({ question, mode, score: result, cited: answer.citedIds, text: answer.text });
+
+        if (mode === 'agentic') {
+          if (question.shape === 'negative') {
+            expect(answer.citedIds, `hallucinated: ${answer.text.slice(0, 200)}`).toEqual([]);
+          } else {
+            expect(
+              result.recall,
+              `recall too low. cited=${answer.citedIds.join(',')} expected=${question.expected.join(',')}`,
+            ).toBeGreaterThanOrEqual(0.9);
+          }
+        }
+      });
+    }
+  }
+});
+
+/* ---------------------------------------------------------------- report --- */
 
 function mean(values: number[]): number {
   return values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
@@ -88,53 +102,80 @@ function pct(value: number): string {
 }
 
 afterAll(() => {
-  if (!ready) {
-    const why = !indexExists() ? 'no index (run `npm run ingest`)' : 'no GOOGLE_GENERATIVE_AI_API_KEY';
-    console.log(`\n  eval skipped — ${why}\n`);
+  if (!indexed) {
+    console.log('\n  eval skipped — no index. Run `npm run ingest`.\n');
     return;
   }
-  if (rows.length === 0) return;
+  if (retrieval.length === 0) return;
 
-  const line = '─'.repeat(96);
-  console.log(`\n${line}\n  RETRIEVAL EVAL — ${questions.length} questions derived from ground truth, ${MODES.length} modes\n${line}`);
-  console.log(
-    `  ${'question'.padEnd(46)} ${'shape'.padEnd(16)} ${'agentic P/R'.padEnd(13)} ${'classic P/R'}`,
-  );
-  console.log(`  ${'─'.repeat(46)} ${'─'.repeat(16)} ${'─'.repeat(13)} ${'─'.repeat(13)}`);
+  const rule = '─'.repeat(94);
+  console.log(`\n${rule}`);
+  console.log(`  RETRIEVAL CEILING — ${retrieval.length} questions derived from ground truth, no chat model`);
+  console.log(rule);
+  console.log(`  ${'question'.padEnd(44)} ${'shape'.padEnd(16)} ${'agentic P/R'.padEnd(14)} classic P/R`);
+  console.log(`  ${'─'.repeat(44)} ${'─'.repeat(16)} ${'─'.repeat(14)} ${'─'.repeat(13)}`);
 
-  for (const question of questions) {
-    const cells = MODES.map((mode) => {
-      const row = rows.find((r) => r.question.id === question.id && r.mode === mode);
-      return row ? `${pct(row.score.precision)} /${pct(row.score.recall)}` : '     —      ';
-    });
-    const label = question.question.length > 45 ? `${question.question.slice(0, 42)}...` : question.question;
-    console.log(`  ${label.padEnd(46)} ${question.shape.padEnd(16)} ${cells[0].padEnd(13)} ${cells[1]}`);
+  for (const row of retrieval) {
+    const label =
+      row.question.question.length > 43
+        ? `${row.question.question.slice(0, 40)}...`
+        : row.question.question;
+    console.log(
+      `  ${label.padEnd(44)} ${row.question.shape.padEnd(16)} ` +
+        `${`${pct(row.agentic.score.precision)} /${pct(row.agentic.score.recall)}`.padEnd(14)} ` +
+        `${pct(row.classic.score.precision)} /${pct(row.classic.score.recall)}`,
+    );
   }
 
-  console.log(`  ${'─'.repeat(96)}`);
-  const summary = MODES.map((mode) => {
-    const modeRows = rows.filter((r) => r.mode === mode);
-    return {
-      mode,
-      precision: mean(modeRows.map((r) => r.score.precision)),
-      recall: mean(modeRows.map((r) => r.score.recall)),
-      f1: mean(modeRows.map((r) => r.score.f1)),
-    };
-  });
-  for (const s of summary) {
-    console.log(`  ${s.mode.padEnd(46)} ${''.padEnd(16)} precision ${pct(s.precision)}   recall ${pct(s.recall)}   F1 ${pct(s.f1)}`);
+  console.log(`  ${'─'.repeat(94)}`);
+  for (const [label, arm] of [
+    ['agentic (tool-routed)', 'agentic'],
+    [`classic  (top-${CLASSIC_TOP_K})`, 'classic'],
+  ] as const) {
+    const rows = retrieval.map((r) => r[arm]);
+    console.log(
+      `  ${label.padEnd(44)} ${''.padEnd(16)} precision ${pct(mean(rows.map((r) => r.score.precision)))}` +
+        `   recall ${pct(mean(rows.map((r) => r.score.recall)))}` +
+        `   F1 ${pct(mean(rows.map((r) => r.score.f1)))}`,
+    );
   }
 
-  const aggregation = MODES.map((mode) => {
-    const modeRows = rows.filter((r) => r.mode === mode && r.question.shape === 'aggregation');
-    return { mode, recall: mean(modeRows.map((r) => r.score.recall)) };
-  });
-  const hallucinated = MODES.map((mode) => ({
-    mode,
-    count: rows.filter((r) => r.mode === mode && r.question.shape === 'negative' && r.cited.length > 0).length,
-  }));
+  const aggregation = retrieval.filter((r) => r.question.shape === 'aggregation');
+  if (aggregation.length) {
+    console.log(`\n  Aggregation questions — the shape top-k structurally cannot answer:`);
+    for (const row of aggregation) {
+      console.log(
+        `    ${row.question.question.padEnd(52)} ` +
+          `agentic ${String(row.agentic.ids.length).padStart(2)}/${row.question.expected.length}` +
+          `   classic ${String(row.classic.ids.length).padStart(2)}/${row.question.expected.length}`,
+      );
+    }
+    console.log(
+      `    recall  agentic ${pct(mean(aggregation.map((r) => r.agentic.score.recall)))}` +
+        `   vs   classic ${pct(mean(aggregation.map((r) => r.classic.score.recall)))}`,
+    );
+  }
 
-  console.log(`\n  aggregation recall   agentic ${pct(aggregation[0].recall)}   vs   classic ${pct(aggregation[1].recall)}`);
-  console.log(`  hallucinated names   agentic ${String(hallucinated[0].count).padStart(4)}   vs   classic ${String(hallucinated[1].count).padStart(4)}`);
-  console.log(`${line}\n`);
+  if (endToEnd.length > 0) {
+    console.log(`\n${rule}`);
+    console.log(`  END-TO-END — ${e2eQuestions.length} question(s) through the real chat path`);
+    console.log(rule);
+    for (const mode of MODES) {
+      const rows = endToEnd.filter((r) => r.mode === mode);
+      if (rows.length === 0) continue;
+      console.log(
+        `  ${mode.padEnd(44)} precision ${pct(mean(rows.map((r) => r.score.precision)))}` +
+          `   recall ${pct(mean(rows.map((r) => r.score.recall)))}`,
+      );
+      for (const row of rows) {
+        console.log(`    ${row.question.id.padEnd(20)} cited ${String(row.cited.length).padStart(2)}/${row.question.expected.length}`);
+      }
+    }
+    console.log(`\n  (raise with EVAL_E2E=<n>; the free tier allows 20 chat requests per day per model)`);
+  } else if (hasApiKey()) {
+    console.log(`\n  end-to-end tier skipped — set EVAL_E2E=<n> to run it.`);
+  } else {
+    console.log(`\n  end-to-end tier skipped — no GOOGLE_GENERATIVE_AI_API_KEY.`);
+  }
+  console.log(`${rule}\n`);
 });

@@ -133,11 +133,14 @@ and any ranked prefix of a set is the wrong shape of answer. The failure is also
 invisible: the model produces a confident, well-formed list that is simply
 incomplete.
 
-**Embeddings blur near-identical text.** Thirty CVs of European software
-engineers are all neighbours in vector space. "UPC" and "Universitat Politècnica
-de Catalunya" are not: an acronym shares almost no surface form with its
-expansion, so the one candidate who actually graduated from UPC does not
-reliably outrank twenty-nine others who did not.
+**Acronyms cost precision, not recall.** I expected "UPC" to miss the one
+candidate whose CV says "Universitat Politècnica de Catalunya" — an acronym
+shares almost no surface form with its expansion. The measurement says
+otherwise: classic retrieval *does* surface them, at **100% recall but 25%
+precision**, burying the right graduate among three wrong ones. Thirty CVs of
+European engineers are all neighbours in vector space, so the correct answer
+arrives indistinguishable from the noise around it. The alias map turns that
+into an exact filter, which is why the agentic arm scores 100/100.
 
 So the model routes between three retrievers instead of always calling one:
 
@@ -263,29 +266,90 @@ vision model instead.
 
 ## Evaluation
 
-`npm run eval` scores set precision and recall over the candidate ids cited in
-the answer, for both retrieval modes.
+`npm run eval` measures agentic against classic retrieval in **two tiers**,
+because they answer different questions.
 
 The questions are **derived from `data/ground_truth/*.json`, not hand-written**.
 We generated the corpus, so we have a perfect oracle for it: the expected answer
 to "who has experience with Python?" is computed by scanning the ground truth,
-which means it cannot drift out of sync with what was indexed and stays correct
-if the corpus is regenerated. Coverage spans all three question shapes above,
-plus multi-constraint questions ("senior candidates in Barcelona who know
-Python") and negative cases ("who worked at Google?", "who has experience with
-COBOL?") where the correct answer is nobody and naming anyone scores zero
-precision.
+so it cannot drift out of sync with what was indexed and stays correct if the
+corpus is regenerated. Coverage spans all three question shapes from the brief,
+plus multi-constraint questions and negative cases where the correct answer is
+nobody.
 
-Both modes run the same prompt and the same code path, differing only in whether
-the tools are available — otherwise the comparison would measure something other
-than the retrieval strategy.
+### Tier 1 — retrieval ceiling (deterministic, no chat model)
 
-> **Numbers:** run `npm run eval` and paste its summary table here. The headline
-> to look for is aggregation recall: classic top-5 cannot exceed 5/18 on the
-> Python question by construction, while the agentic path returns the complete
-> set.
+The central claim is about the *retrieval layer*, not the model's prose, so it is
+measured without a chat model at all. Both arms get their best case: classic runs
+the same top-5 search the app's classic mode uses, and agentic runs the tool call
+that ideally answers the question, taken from the oracle rather than chosen by a
+model. That removes model variance from the headline number, so the gap is
+attributable to the architecture and nothing else.
 
----
+```
+question                                     shape            agentic P/R    classic P/R
+──────────────────────────────────────────── ──────────────── ────────────── ─────────────
+Who has experience with Python?              aggregation      100% /100%     100% / 21%
+Who has experience with Docker?              aggregation      100% /100%     100% / 22%
+Who has experience with Git?                 aggregation      100% /100%     100% / 33%
+How many candidates speak Spanish, and w...  aggregation      100% /100%     100% / 71%
+Which candidate graduated from UPC?          exact-filter     100% /100%      25% /100%
+Which candidates graduated from TCD?         exact-filter     100% /100%      67% /100%
+Which candidate graduated from KTH?          exact-filter     100% /100%      25% /100%
+Summarize the profile of Carla Serrano.      document         100% /100%     100% /100%
+Summarize the profile of Owen Byrne.         document         100% /100%     100% /100%
+Which senior candidates are based in São...  multi-constraint 100% /100%      33% /100%
+Which senior candidates are based in Hel...  multi-constraint 100% /100%      50% /100%
+Which candidates worked at Google?           negative         100% /100%       0% /  0%
+Who has experience with COBOL?               negative         100% /100%       0% /  0%
+──────────────────────────────────────────────────────────────────────────────────────────
+agentic (tool-routed)                                         precision 100%   recall 100%
+classic  (top-5)                                              precision  62%   recall  65%
+```
+
+**The headline is aggregation recall: 100% vs 37%.**
+
+```
+Who has experience with Python?    agentic 19/19   classic  4/19
+Who has experience with Docker?    agentic 18/18   classic  4/18
+Who has experience with Git?       agentic 15/15   classic  5/15
+How many candidates speak Spanish? agentic  7/7    classic  5/7
+```
+
+Classic returns 4 of 19 Python candidates because top-5 chunk retrieval can only
+ever reach 5 documents, and two of the five chunks belonged to the same person.
+This is not a tuning problem: raising *k* to 19 would still be a ranked prefix
+of a set, and *k* would have to be tuned per question to the size of an answer
+nobody knows in advance.
+
+The **negative cases** are the other clean result. Asked who worked at Google,
+classic retrieval dutifully returns its five nearest chunks — all wrong, scoring
+0% precision — while the filter returns nothing, which is the correct answer.
+
+### Tier 2 — end-to-end through the real chat path
+
+Tier 1 shows what each architecture *can* reach. Tier 2 confirms the model
+actually gets there, running the shipped prompt and tools:
+
+```
+END-TO-END — 2 questions through the real chat path
+agentic     precision 100%   recall 100%      agg-python cited 19/19 · agg-docker cited 18/18
+classic     precision 100%   recall  22%      agg-python cited  4/19 · agg-docker cited  4/18
+```
+
+The agentic path reaches its ceiling exactly. Both modes run the same prompt and
+the same code path, differing only in whether the tools are available —
+otherwise the comparison would measure something other than the retrieval
+strategy.
+
+Tier 2 costs several chat requests per question and Gemini's free tier allows
+**20 per day per model**, so it runs on a 2-question sample by default:
+
+```bash
+npm run eval              # retrieval ceiling + a 2-question end-to-end sample
+EVAL_E2E=0 npm run eval   # retrieval only — zero chat requests
+EVAL_E2E=13 npm run eval  # full end-to-end, needs generous quota
+```
 
 ## Known limitations
 
