@@ -31,8 +31,15 @@ export interface ExtractedPdf {
   pages: ExtractedPage[];
 }
 
-/** Below this, a page is assumed to carry no real text layer. */
-const MIN_PAGE_CHARS = 50;
+/**
+ * Below this, a page is assumed to carry no text layer at all.
+ *
+ * Deliberately low. A CV that overflows onto a second page often leaves only a
+ * line or two there, and that is real extractable text — sending it to the
+ * vision model would spend a request to re-read something we already have. The
+ * case this threshold is for is the flattened-bitmap CV, which yields zero.
+ */
+const MIN_PAGE_CHARS = 20;
 
 interface Line {
   y: number;
@@ -202,7 +209,12 @@ const VISION_PROMPT =
 
 /** Rasterise a page and read it with the vision model. */
 async function extractPageWithVision(data: Uint8Array, pageNumber: number): Promise<string> {
-  const png = await renderPageAsImage(data, pageNumber, { scale: 2 });
+  // unpdf needs an explicit canvas implementation under Node; @napi-rs/canvas is
+  // a devDependency because this path only ever runs during ingest.
+  const png = await renderPageAsImage(data, pageNumber, {
+    scale: 2,
+    canvasImport: () => import('@napi-rs/canvas'),
+  });
   const { text } = await generateText({
     model: textModel(),
     maxRetries: 3,

@@ -138,16 +138,40 @@ function retarget(input: RequestInfo | URL): RequestInfo | URL {
   return typeof input === 'string' || input instanceof URL ? rewritten : new Request(rewritten, input);
 }
 
+/** Transient server-side failures worth retrying rather than surfacing. */
+const OVERLOADED = new Set([500, 502, 503, 504]);
+
 const throttledFetch: typeof fetch = async (input, init) => {
+  let overloadAttempts = 0;
+
   for (let attempt = 0; ; attempt++) {
     await pace();
     const response = await fetch(retarget(input), init);
-    if (response.status !== 429 || attempt >= MAX_429_RETRIES) return response;
 
-    const { retryMs, daily } = await readQuotaError(response);
     const isTextCall = MODEL_URL.test(
       typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url,
     );
+
+    // "This model is currently experiencing high demand" — a 503, not a quota
+    // problem. Back off a little, and if a model stays busy, move down the chain
+    // rather than failing a 30-document ingest two-thirds of the way through.
+    if (OVERLOADED.has(response.status) && attempt < MAX_429_RETRIES) {
+      overloadAttempts++;
+      if (overloadAttempts >= 3 && isTextCall && activeModel < LLM_MODELS.length - 1) {
+        activeModel++;
+        console.warn(`  … ${response.status} from the model, switching to ${currentModel()}`);
+        overloadAttempts = 0;
+        continue;
+      }
+      const wait = Math.min(2000 * 2 ** overloadAttempts, 20_000);
+      console.warn(`  … ${response.status} overloaded, retrying in ${(wait / 1000).toFixed(0)}s`);
+      await sleep(wait);
+      continue;
+    }
+
+    if (response.status !== 429 || attempt >= MAX_429_RETRIES) return response;
+
+    const { retryMs, daily } = await readQuotaError(response);
 
     // A daily bucket will not clear by waiting. If another model in the chain is
     // still in budget, roll over to it and retry immediately.
@@ -190,18 +214,26 @@ function embeddingModel(): EmbeddingModel<string> {
  * measurably costs recall. Keeping them in two named functions makes it hard to
  * get wrong at a call site.
  */
+/** Gemini's batchEmbedContents accepts at most 100 inputs per request. */
+const EMBED_BATCH = 100;
+
 export async function embedDocuments(texts: string[]): Promise<number[][]> {
   if (texts.length === 0) return [];
-  const { embeddings } = await embedMany({
-    model: embeddingModel(),
-    values: texts,
-    maxParallelCalls: 4,
-    maxRetries: 3,
-    providerOptions: {
-      google: { outputDimensionality: EMBED_DIMS, taskType: 'RETRIEVAL_DOCUMENT' },
-    },
-  });
-  return embeddings.map((e) => [...e]);
+
+  const out: number[][] = [];
+  for (let start = 0; start < texts.length; start += EMBED_BATCH) {
+    const { embeddings } = await embedMany({
+      model: embeddingModel(),
+      values: texts.slice(start, start + EMBED_BATCH),
+      maxParallelCalls: 2,
+      maxRetries: 3,
+      providerOptions: {
+        google: { outputDimensionality: EMBED_DIMS, taskType: 'RETRIEVAL_DOCUMENT' },
+      },
+    });
+    for (const embedding of embeddings) out.push([...embedding]);
+  }
+  return out;
 }
 
 export async function embedQuery(text: string): Promise<number[]> {

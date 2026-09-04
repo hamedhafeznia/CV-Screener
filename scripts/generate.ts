@@ -205,7 +205,8 @@ async function buildPdf(spec: CVSpec, profile: CVProfile, photoDataUri: string, 
     // which is what forces ingest down the vision fallback.
     const shot = await page.screenshot({ type: 'png', fullPage: true });
     await page.setContent(
-      `<body style="margin:0"><img src="${toDataUri(shot)}" style="width:210mm;display:block"></body>`,
+      `<body style="margin:0"><img src="${toDataUri(shot)}" ` +
+        `style="display:block;width:210mm;height:297mm;object-fit:contain;object-position:top"></body>`,
       { waitUntil: 'load' },
     );
     await page.pdf({ path: target, format: 'A4', printBackground: true });

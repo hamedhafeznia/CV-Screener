@@ -1,0 +1,8 @@
+{
+  "built_at": "2026-09-04T10:37:08.257Z",
+  "candidates": 30,
+  "chunks": 223,
+  "embedding_dims": 768,
+  "vision_pages": 2,
+  "two_column_cvs": 16
+}
