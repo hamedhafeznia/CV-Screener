@@ -1,11 +1,17 @@
 # CV Screener — Product Requirements Document
 
 An AI-powered CV screening chat application. Built as a technical task for a
-Full-Stack AI Engineer role. **Deadline: 2 days.** Runs locally; no deployment required.
+Full-Stack AI Engineer role. Runs locally; no deployment required.
 
-> This document is self-contained. A fresh session should be able to build the
-> entire project from it without additional context. Section 16 records *why*
-> each decision was made — read it before proposing alternatives.
+> **What this document is.** Written before implementation as an executable
+> spec — self-contained enough that an agent could build the project from it
+> without additional context. Section 15 records *why* each decision was made,
+> committed up front rather than rationalised afterwards.
+>
+> The [README](README.md) documents what was actually built, including the two
+> places where measurement contradicted the plan: the corpus turned out to hold
+> 19 Python candidates rather than the 18 assumed here, and acronyms cost classic
+> retrieval *precision* rather than the recall predicted in §7.1.
 
 ---
 
@@ -17,7 +23,7 @@ Build an end-to-end prototype that lets a user chat with a collection of ~30 fak
 2. **Ingest** those PDFs into a retrievable store (RAG pipeline).
 3. **Chat** — a web UI where answers are grounded in the CVs and cite their sources.
 
-### Must answer these three questions correctly (the grader's own examples)
+### Must answer these three questions correctly (the brief's own examples)
 
 | Question | Question type | Required behaviour |
 |---|---|---|
@@ -38,7 +44,7 @@ These three shapes drive the entire retrieval design (§7).
 | D3 | Working app | `npm install && npm run dev` → working chat, using the **committed** index. No ingest required. |
 | D4 | Source citations | Every answer cites candidate + page; clicking a citation opens the actual PDF at that page. |
 | D5 | Eval harness | `npm run eval` prints precision/recall for agentic vs classic RAG. |
-| D6 | Video < 5 min | Pipeline walkthrough → live demo → technical highlight. Script in §14. |
+| D6 | Video < 5 min | Pipeline walkthrough → live demo → technical highlight. |
 | D7 | Architecture diagram | Committed as `docs/architecture.png` or inline Mermaid in README. |
 
 **Definition of done:** a reviewer clones the repo, adds one API key, runs two
@@ -556,9 +562,9 @@ Suggested commit messages use Conventional Commits.
 
 | # | Build | Check | Commit |
 |---|---|---|---|
-| **P18** | README (§15) + architecture diagram. | Fresh clone → 3 commands → working chat | `docs: README with architecture and design rationale` |
+| **P18** | README (§14) + architecture diagram. | Fresh clone → 3 commands → working chat | `docs: README with architecture and design rationale` |
 
-Then record the video (§14).
+Then record the video.
 
 ### If the clock runs out
 
@@ -568,19 +574,7 @@ pieces of the entire submission.
 
 ---
 
-## 14. Video script (< 5 min)
-
-| Time | Segment | Content |
-|---|---|---|
-| 0:00–0:45 | Generation | Show the seeded sampler. "Prompting for 30 CVs gives you 30 identical people — diversity is enforced in code." Show 3 rendered PDFs side by side. |
-| 0:45–1:30 | Architecture | The §3 diagram. Structured extraction → SQLite; chunks → LanceDB. Why two stores. |
-| 1:30–3:00 | Demo | Their three questions, live. Point at the tool chips as they stream: "it chose the SQL filter here, not vector search." Click a citation → PDF opens at the cited page. |
-| 3:00–4:15 | **Technical highlight** | The core argument: naive top-k RAG *structurally cannot* answer "who has Python?" — it caps recall at k. Show the eval output: classic vs agentic recall. This is the strongest 75 seconds; rehearse it. |
-| 4:15–5:00 | Judgment | Why no LangChain. Why SQLite not Postgres. "At 30 CVs you could skip retrieval entirely and stuff a 1M-context window — I built retrieval because it's what survives at 30,000." Note pgvector as the production path. |
-
----
-
-## 15. README requirements
+## 14. README requirements
 
 1. Architecture diagram + one-paragraph explanation.
 2. Setup: 3 commands, working in under 2 minutes.
@@ -595,14 +589,14 @@ pieces of the entire submission.
 
 ---
 
-## 16. Decisions log
+## 15. Decisions log
 
 Read before proposing changes. Each was considered and settled.
 
 | Decision | Rationale |
 |---|---|
 | **Node/TypeScript, not Python** | Removes the two-runtime tax (venv, CORS, two dev servers) on a 2-day clock. The Vercel AI SDK provides the agentic loop *and* streams tool-call events to `useChat` — which is exactly the feature that makes retrieval visible in the demo. Type/Zod sharing across API and UI. Playwright is natively a Node tool. Cost: weaker PDF extraction than PyMuPDF — acceptable because we generate the PDFs ourselves, so text is clean and embedded. |
-| **Tool-routed RAG, not classic top-k** | Two of the three grader questions are unanswerable by top-k retrieval (recall cap; acronym blur). Vector search is retained as one of three routes. |
+| **Tool-routed RAG, not classic top-k** | Two of the three questions in the brief are unanswerable by top-k retrieval (recall cap; acronym blur). Vector search is retained as one of three routes. |
 | **No LangChain / LlamaIndex** | The graded artifact is the chunking strategy, retriever routing, tool loop, and citation plumbing — a framework hides all of it behind `create_retrieval_chain`. The loop is ~40 lines. Mixed SQL + vector retrieval with custom citation payloads is exactly where you end up subclassing framework internals. State this as a deliberate choice in the README. |
 | **SQLite, not Postgres** | A SQLite file can be committed to git; a Postgres database cannot. That single property is what lets a reviewer clone and run in two commands. 30 rows, one local user. `node:sqlite` is built into Node 24 — zero deps, no server, no Docker. |
 | **LanceDB, not pgvector/Chroma/Qdrant** | File-based, no server (no Docker on this machine), official Node bindings, built-in hybrid + FTS. At 300 chunks a numpy-style brute-force scan would also work — LanceDB is the version that scales and shows tool familiarity. |
@@ -619,7 +613,7 @@ Read before proposing changes. Each was considered and settled.
 
 ---
 
-## 17. Non-goals
+## 16. Non-goals
 
 Authentication · multi-user support · deployment/hosting · incremental re-indexing ·
 conversation persistence · real CV data (all data is synthetic) · resume ranking or

@@ -115,22 +115,6 @@ export default function Page() {
             {active?.title ?? COPY.sidebar.newChat}
           </span>
 
-          <div className="ml-auto flex shrink-0 items-center rounded-full bg-surface p-0.5">
-            {(['agentic', 'classic'] as const).map((value) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setMode(value)}
-                aria-pressed={mode === value}
-                className={cn(
-                  'rounded-full px-2 py-1 text-xs transition-colors sm:px-2.5',
-                  mode === value ? 'bg-surface-2 text-text' : 'text-faint hover:text-muted',
-                )}
-              >
-                {COPY.header.modes[value]}
-              </button>
-            ))}
-          </div>
         </header>
 
         <div className="relative flex min-h-0 flex-1">
@@ -169,6 +153,7 @@ export default function Page() {
               initialMessages={active.messages}
               mode={mode}
               candidateCount={candidates.length}
+              onModeChange={setMode}
               chunks={meta?.chunks}
               model={meta?.model}
               onMessagesChange={handleMessagesChange}

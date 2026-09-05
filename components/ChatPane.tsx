@@ -5,6 +5,7 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { ArrowUp, Square, TriangleAlert } from 'lucide-react';
 import { Button, Textarea } from '@/components/ui/primitives';
+import { cn } from '@/lib/utils';
 import { Message } from '@/components/Message';
 import { Thinking } from '@/components/Thinking';
 import { EmptyState } from '@/components/EmptyState';
@@ -22,6 +23,7 @@ import { COPY } from '@/lib/copy';
 export function ChatPane({
   initialMessages,
   mode,
+  onModeChange,
   candidateCount,
   chunks,
   model,
@@ -29,6 +31,7 @@ export function ChatPane({
 }: {
   initialMessages: UIMessage[];
   mode: ChatMode;
+  onModeChange: (mode: ChatMode) => void;
   candidateCount: number;
   chunks?: number;
   model?: string;
@@ -167,10 +170,33 @@ export function ChatPane({
             aria-label={COPY.chat.inputLabel}
           />
           <div className="mt-3 flex items-end justify-between gap-3">
-            <span className="truncate text-xs text-faint">
-              {COPY.chat.meta(model, chunks).model}
+            {/* Configuration, not navigation: the retrieval mode sits with the
+                model name and index size rather than in the header. Classic is
+                a deliberately degraded baseline, so it belongs where a reader
+                already expects technical detail — not as the app's most
+                prominent control. */}
+            <span className="flex min-w-0 items-center text-xs text-faint">
+              <span className="truncate">{COPY.chat.meta(model, chunks).model}</span>
               <span className="mx-2 text-surface-2">·</span>
-              {COPY.chat.meta(model, chunks).chunks}
+              <span className="hidden shrink-0 sm:inline">{COPY.chat.meta(model, chunks).chunks}</span>
+              <span className="mx-2 hidden text-surface-2 sm:inline">·</span>
+              <span className="flex shrink-0 items-center gap-1.5">
+                {(['agentic', 'classic'] as const).map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => onModeChange(value)}
+                    aria-pressed={mode === value}
+                    title={COPY.chat.modeHint[value]}
+                    className={cn(
+                      'rounded-full px-1.5 py-0.5 transition-colors',
+                      mode === value ? 'bg-surface-2 text-text' : 'text-faint hover:text-muted',
+                    )}
+                  >
+                    {COPY.header.modes[value]}
+                  </button>
+                ))}
+              </span>
             </span>
             {busy ? (
               <Button type="button" size="icon" variant="outline" onClick={stop} aria-label={COPY.chat.stop}>

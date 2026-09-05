@@ -49,6 +49,11 @@ export const COPY = {
     inputLabel: 'Ask a question about the CVs',
     send: 'Send',
     stop: 'Stop',
+    /** Tooltips, so nobody switches to the degraded baseline by accident. */
+    modeHint: {
+      agentic: 'Tool-routed retrieval: the model picks between SQL filter, semantic search and whole-document fetch.',
+      classic: 'Baseline for comparison: single top-5 vector search, no tools. Deliberately weaker.',
+    },
     meta: (model: string | undefined, chunks: number | undefined) => ({
       model: model ?? '—',
       chunks: `${chunks ?? '—'} chunks`,
